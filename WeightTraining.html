@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>重量訓練紀錄</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="filter-container" style="margin-bottom: 20px;">
+        <label for="startDate">起始日期：</label>
+        <input type="date" id="startDate" onchange="filterTable()">
+        <label for="endDate" style="margin-left: 20px;">結束日期：</label>
+        <input type="date" id="endDate" onchange="filterTable()">
+        <button onclick="resetFilter()" style="margin-left: 10px;">重設</button>
+    </div>
+    <table border="1" class="dataframe" id="myTable">
+      <thead>
+        <tr style="text-align: right;">
+          <th>ID</th>
+          <th>Name</th>
+          <th>Date</th>
+          <th>Elapsed Time</th>
+          <th>Calories</th>
+          <th>Max HR</th>
+          <th>Mean HR</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>16943591762</td>
+          <td><a href="https://www.strava.com/activities/16943591762" target="_blank">重量训练（晚上）@練一下</a></td>
+          <td>2026-01-05 18:15:42</td>
+          <td>01:04:09</td>
+          <td>481.0</td>
+          <td>168</td>
+          <td>130.1</td>
+          <td>SQUAT 120 6*5<br>ROWING 45 10*5<br>BENCH PRESS 60 5*5</td>
+        </tr>
+        <tr>
+          <td>16979185272</td>
+          <td><a href="https://www.strava.com/activities/16979185272" target="_blank">重量训练（晚上）</a></td>
+          <td>2026-01-08 20:48:25</td>
+          <td>00:53:09</td>
+          <td>455.0</td>
+          <td>179</td>
+          <td>130.2</td>
+          <td>SQUAT 130 3*3<br>BENCH PRESS 40 10*5<br>SUMO DL 140 5*3<br>ROWING 70 8*5<br>SHOULDER PRESS 30 10*3<br>PULL UP 6*1</td>
+        </tr>
+        <tr>
+          <td>17021356131</td>
+          <td><a href="https://www.strava.com/activities/17021356131" target="_blank">重量训练（晚上）@練一下</a></td>
+          <td>2026-01-12 18:11:06</td>
+          <td>01:08:11</td>
+          <td>440.0</td>
+          <td>169</td>
+          <td>119.1</td>
+          <td>SQUAT 140 3*3 105 6 110 6<br>LEG EXTENSION 49.5 12*5<br>ROWING 60 12*5<br>BENCH PRESS 65 5*5</td>
+        </tr>
+        <tr>
+          <td>17034525107</td>
+          <td><a href="https://www.strava.com/activities/17034525107" target="_blank">重量训练（晚上）</a></td>
+          <td>2026-01-13 20:42:18</td>
+          <td>00:52:15</td>
+          <td>425.0</td>
+          <td>170</td>
+          <td>129.4</td>
+          <td>SQUAT 125 5*5<br>BENCH PRESS 60 3 70 1 75 1 80 40 15*3<br>PULL UP 6*5<br>FRONT RAISE 10 12*3</td>
+        </tr>
+        <tr>
+          <td>17046330588</td>
+          <td><a href="https://www.strava.com/activities/17046330588" target="_blank">重量训练（晚上）</a></td>
+          <td>2026-01-14 19:41:59</td>
+          <td>01:04:52</td>
+          <td>480.0</td>
+          <td>171</td>
+          <td>125.1</td>
+          <td>FRONT SQUAT 80 6*5<br>RDL 120 5 160 1 (W/ STRAPS) 180 1 185 1 160 3*3<br>LATERAL RAISE 10 12*5<br>LOW ROW 41 12*5<br>CABLE CROSS 14 15*3</td>
+        </tr>
+        <tr>
+          <td>17069105588</td>
+          <td><a href="https://www.strava.com/activities/17069105588" target="_blank">重量训练（晚上）</a></td>
+          <td>2026-01-16 19:33:20</td>
+          <td>01:06:40</td>
+          <td>462.0</td>
+          <td>164</td>
+          <td>124.8</td>
+          <td>BENCH PRESS 60 5 (W/ SLINGSHOT) 70 5*5 85 1<br>SQUAT 120 3*5<br>ROWING 70 6*5<br>SHOULDER PRESS 40 3*3 30 5*2<br>CALF RAISE 109 15*5<br>TRICEPS PRESS 63 10*4</td>
+        </tr>
+        <tr>
+          <td>17102288860</td>
+          <td><a href="https://www.strava.com/activities/17102288860" target="_blank">重量训练（下午）</a></td>
+          <td>2026-01-19 17:54:18</td>
+          <td>00:56:57</td>
+          <td>362.0</td>
+          <td>162</td>
+          <td>117.5</td>
+          <td>SQUAT 130 1 155 1 160 1 100 3<br>DUMBBELL FRONT RAISE 12.5 10*3<br>BENCH PRESS 50 10*3<br>CHESS FLY 10*3</td>
+        </tr>
+        <tr>
+          <td>17138806220</td>
+          <td><a href="https://www.strava.com/activities/17138806220" target="_blank">重量训练（晚上）</a></td>
+          <td>2026-01-22 20:25:22</td>
+          <td>01:08:35</td>
+          <td>523.0</td>
+          <td>169</td>
+          <td>131.9</td>
+          <td>SQUAT 100 6*6<br>ROWING 60 10*5<br>SUMO DL 120 5*5<br>STRAIGHT ARM PULL DOWN 41 12*3<br>CABLE CROSS OVER 14 12*3</td>
+        </tr>
+        <tr>
+          <td>17181244145</td>
+          <td><a href="https://www.strava.com/activities/17181244145" target="_blank">重量训练（晚上）@練一下</a></td>
+          <td>2026-01-26 18:15:19</td>
+          <td>01:08:36</td>
+          <td>493.0</td>
+          <td>176</td>
+          <td>122.4</td>
+          <td>SSB SQUAT 102 5*1 112 5*4<br>RDL 130 5*5<br>SLED PUSH 25 1 50 3<br>BATTLE ROPE 30S*3</td>
+        </tr>
+        <tr>
+          <td>17193312032</td>
+          <td><a href="https://www.strava.com/activities/17193312032" target="_blank">重量训练（晚上）</a></td>
+          <td>2026-01-27 20:41:18</td>
+          <td>00:10:42</td>
+          <td>105.0</td>
+          <td>165</td>
+          <td>136.7</td>
+          <td>DUMBBELL LATERAL RAISE 10 12*3<br>DUMBBELL FROMT RAISE 10 12*3<br>DUMBBELL SHRUG 30 12*3<br>CALF RAISE 109 20*3</td>
+        </tr>
+        <tr>
+          <td>17216707333</td>
+          <td><a href="https://www.strava.com/activities/17216707333" target="_blank">重量训练（晚上）</a></td>
+          <td>2026-01-29 20:19:30</td>
+          <td>01:02:47</td>
+          <td>440.0</td>
+          <td>162</td>
+          <td>124.7</td>
+          <td>SQUAT 120 5*5 140 1<br>EOWING 70 8*6<br>BENCH PRESS (W/ SLING SHOT) 70 5*6<br>STRAIGHT ARM PULL DOWN 27 10*3<br>SINGLE SIDE LEG EXTENSION 29 12*3</td>
+        </tr>
+        <tr>
+          <td>17258866881</td>
+          <td><a href="https://www.strava.com/activities/17258866881" target="_blank">重量训练（晚上）</a></td>
+          <td>2026-02-02 18:02:30</td>
+          <td>01:13:33</td>
+          <td>514.0</td>
+          <td>160</td>
+          <td>124.5</td>
+          <td>SQUAT 125 5*5<br>BENCH PRESS (W/ SLING SHOT) 70 5*5<br>BARBELL ROWING 60 10*5<br>SINGLE SIDE T BAR SHOULDER PRESS 5 10*5<br>BATTLE ROPE 30 SECONDS*2</td>
+        </tr>
+        <tr>
+          <td>17283671264</td>
+          <td><a href="https://www.strava.com/activities/17283671264" target="_blank">重量训练（晚上）</a></td>
+          <td>2026-02-04 20:06:13</td>
+          <td>01:10:26</td>
+          <td>460.0</td>
+          <td>163</td>
+          <td>123.0</td>
+          <td>FRONT SQUAT 80 3*5<br>BENCH PRESS (W/ SLING SHOT) 80 3*5<br>BARBELL ROWING 70 8*5<br>SUMO DL 140 3*5<br>DUMBBELL LATERAL RAISE 10 12*3<br>DUMBBELL FRONT RAISE 10 12*3</td>
+        </tr>
+        <tr>
+          <td>17317311370</td>
+          <td><a href="https://www.strava.com/activities/17317311370" target="_blank">重量训练（夜间）</a></td>
+          <td>2026-02-07 21:23:32</td>
+          <td>00:22:43</td>
+          <td>167.0</td>
+          <td>152</td>
+          <td>121.1</td>
+          <td>Garmin coach建議的核心訓練</td>
+        </tr>
+        <tr>
+          <td>17323860347</td>
+          <td><a href="https://www.strava.com/activities/17323860347" target="_blank">重量训练（上午）@泰山運動中心</a></td>
+          <td>2026-02-08 10:16:48</td>
+          <td>01:03:34</td>
+          <td>372.0</td>
+          <td>169</td>
+          <td>116.5</td>
+          <td>喔伊喔伊喔<br><br>SQUAT 100 5*5<br>BARBELL ROWING 50 15*5<br>RDL 80 10*3<br>DUMBBELL BENCH PRESS 24 5*5</td>
+        </tr>
+        <tr>
+          <td>17337899823</td>
+          <td><a href="https://www.strava.com/activities/17337899823" target="_blank">重量训练（晚上）@練一下</a></td>
+          <td>2026-02-09 18:16:46</td>
+          <td>01:09:25</td>
+          <td>464.0</td>
+          <td>173</td>
+          <td>122.8</td>
+          <td>SQUAT 120 5*5<br>T BAR ROWING 40 8*5<br>BENCH PRESS 60 5*5<br>DUMBBELL LATERAL RAISE 10 12*5<br>BATTLE RIPE 30 SECONDS *2</td>
+        </tr>
+        <tr>
+          <td>17339324221</td>
+          <td><a href="https://www.strava.com/activities/17339324221" target="_blank">重量训练（夜间）</a></td>
+          <td>2026-02-09 21:22:47</td>
+          <td>00:33:58</td>
+          <td>151.0</td>
+          <td>143</td>
+          <td>107.6</td>
+          <td>None</td>
+        </tr>
+        <tr>
+          <td>17373530082</td>
+          <td><a href="https://www.strava.com/activities/17373530082" target="_blank">重量训练（晚上）</a></td>
+          <td>2026-02-12 20:45:53</td>
+          <td>00:52:03</td>
+          <td>366.0</td>
+          <td>165</td>
+          <td>125.1</td>
+          <td>SQUAT 100 6*5<br>BENCH PRESS 65 6*5<br>UPPER CHESS PRESS 50 5*3<br>BARBELL ROWING 50 15*3<br>DUMBBELL FLY 10 12*3<br>KETTLEBELL SWING 18 90 SEC (56REP)</td>
+        </tr>
+        <tr>
+          <td>17403273734</td>
+          <td><a href="https://www.strava.com/activities/17403273734" target="_blank">重量训练（下午）@國聯WG</a></td>
+          <td>2026-02-15 16:40:55</td>
+          <td>01:35:04</td>
+          <td>670.0</td>
+          <td>164</td>
+          <td>121.1</td>
+          <td>SQUAT 80 10*3<br>UPPER CHESS PRESS 50 6*3<br>LOW CHESS PRESS 40 10*3<br>BENCH PRESS 60  8*3<br>DUMBBELL ROWING 22 12*3<br>DUMBBELL LATERAL RAISE 10 12*3<br>DUMBBELL FRONT RAISE 10 12*3<br>SHOULDER PRESS 30 5*3<br>HACK SQUAT 50 6*3<br>SLED PUSH 25 2 TRIPS<br>BATTLE ROPE 30 SEC *2</td>
+        </tr>
+        <tr>
+          <td>17412297436</td>
+          <td><a href="https://www.strava.com/activities/17412297436" target="_blank">重量训练（上午）@國聯WG</a></td>
+          <td>2026-02-16 10:12:23</td>
+          <td>01:19:40</td>
+          <td>611.0</td>
+          <td>168</td>
+          <td>123.8</td>
+          <td>HIP ABDUCTION 76 10*3<br>DEADLIFT 100 6*5<br>ROWING 60 12*5<br>T BAR CHESS PREAS 20 12*5<br>LOWER CHESS PRESS 40 10*3<br>UPPER CHESS PRESS 40 10*3<br>LATERAL PULLDOWN 36 10*3<br>LOG BAR SHOULDER PRESS 20 10*3<br>SLED PULL 25 3<br>SLED PUSH 45 3<br>KETTLEBELL SWING 1M30S 56TIMES</td>
+        </tr>
+        <tr>
+          <td>17439482122</td>
+          <td><a href="https://www.strava.com/activities/17439482122" target="_blank">重量训练（晚上）</a></td>
+          <td>2026-02-18 20:50:40</td>
+          <td>01:18:54</td>
+          <td>513.0</td>
+          <td>156</td>
+          <td>114.8</td>
+          <td>BENCH PRESS 60 8*6<br>UPPER CHESS PRESS 40 10*5<br>LOWER CHESS PRESS 40 10*5<br>HACK SQUAT 80 6*5<br>CALF RAISE 90 12*6<br>LATERAL RAISE 41 10 36 10*4<br>DUMBBELL CONCENTRATION CURL 10 12*3</td>
+        </tr>
+        <tr>
+          <td>17450323585</td>
+          <td><a href="https://www.strava.com/activities/17450323585" target="_blank">重量训练（晚上）@國聯WG</a></td>
+          <td>2026-02-19 20:33:46</td>
+          <td>00:56:03</td>
+          <td>426.0</td>
+          <td>153</td>
+          <td>123.5</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>17492944186</td>
+          <td><a href="https://www.strava.com/activities/17492944186" target="_blank">重量训练（晚上）@ 練一下</a></td>
+          <td>2026-02-23 18:17:14</td>
+          <td>01:16:49</td>
+          <td>571.0</td>
+          <td>165</td>
+          <td>122.4</td>
+          <td>SQUAT 110 6*5<br>T BAR CHESS PRESS 30 10*5<br>T BAR ROWING 15 10*5<br>BENCH PRESS 50 10 60 5 70 3 80 1 50 10<br>BATTLE ROPE 30 SECONDS * 3</td>
+        </tr>
+        <tr>
+          <td>17529687746</td>
+          <td><a href="https://www.strava.com/activities/17529687746" target="_blank">重量训练（晚上）</a></td>
+          <td>2026-02-26 20:15:16</td>
+          <td>00:46:13</td>
+          <td>328.0</td>
+          <td>154</td>
+          <td>116.0</td>
+          <td>None</td>
+        </tr>
+        <tr>
+          <td>17560056966</td>
+          <td><a href="https://www.strava.com/activities/17560056966" target="_blank">重量训练（下午）@三重運動中心</a></td>
+          <td>2026-03-01 13:00:37</td>
+          <td>00:39:03</td>
+          <td>296.0</td>
+          <td>159</td>
+          <td>120.6</td>
+          <td>東西偏少</td>
+        </tr>
+        <tr>
+          <td>17574493412</td>
+          <td><a href="https://www.strava.com/activities/17574493412" target="_blank">重量训练（晚上）@練一下</a></td>
+          <td>2026-03-02 18:28:45</td>
+          <td>01:05:03</td>
+          <td>433.0</td>
+          <td>158</td>
+          <td>112.8</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>17595281391</td>
+          <td><a href="https://www.strava.com/activities/17595281391" target="_blank">重量训练（上午）</a></td>
+          <td>2026-03-04 07:43:23</td>
+          <td>01:01:59</td>
+          <td>472.0</td>
+          <td>168</td>
+          <td>122.9</td>
+          <td>BENCH PRESS 70 5*5<br>LOWER BENCH PRESS 40 12*5<br>PULL UP 5*5<br>UPPER CHEST PRESS 40 10*3+8*2<br>STRAIGHT SINGLE ARM PULLDOWN 14 12*3<br>LATERAL RAISE 7.5 12*3<br>SINGLE  LEG EXTENSION 32 12*3</td>
+        </tr>
+        <tr>
+          <td>17607949624</td>
+          <td><a href="https://www.strava.com/activities/17607949624" target="_blank">重量训练（上午）</a></td>
+          <td>2026-03-05 07:52:46</td>
+          <td>00:55:35</td>
+          <td>460.0</td>
+          <td>161</td>
+          <td>127.4</td>
+          <td>SQUAT 110 5*5<br>ROWING 60 10*5<br>DUMBBELL SHOULDER PRESS 14 6*5<br>FRONT RAISE 15 12*5<br>DUMBBELL SHOULDER IN/EXTERNAL ROTATION 6 10*3</td>
+        </tr>
+        <tr>
+          <td>17609027960</td>
+          <td><a href="https://www.strava.com/activities/17609027960" target="_blank">重量训练（中午）</a></td>
+          <td>2026-03-05 12:28:39</td>
+          <td>00:21:10</td>
+          <td>124.0</td>
+          <td>145</td>
+          <td>102.9</td>
+          <td>None</td>
+        </tr>
+        <tr>
+          <td>17619694904</td>
+          <td><a href="https://www.strava.com/activities/17619694904" target="_blank">重量训练（上午）</a></td>
+          <td>2026-03-06 07:36:43</td>
+          <td>01:00:59</td>
+          <td>468.0</td>
+          <td>182</td>
+          <td>122.9</td>
+          <td>None</td>
+        </tr>
+        <tr>
+          <td>17643392049</td>
+          <td><a href="https://www.strava.com/activities/17643392049" target="_blank">重量训练（中午）@內湖運動中心</a></td>
+          <td>2026-03-08 12:38:44</td>
+          <td>00:46:11</td>
+          <td>325.0</td>
+          <td>156</td>
+          <td>114.9</td>
+          <td>BENCH PRESS 60 6*5<br>POST LANDMINE CHESS PRESS 20 12*5<br>FARMER WALK 50 3 TRIPS</td>
+        </tr>
+        <tr>
+          <td>17655995667</td>
+          <td><a href="https://www.strava.com/activities/17655995667" target="_blank">重量训练（中午）</a></td>
+          <td>2026-03-09 12:24:50</td>
+          <td>00:24:40</td>
+          <td>155.0</td>
+          <td>136</td>
+          <td>106.4</td>
+          <td>CALF RAISE 20*5<br>LEG CURL 10*3<br>LEG EXTENSION 10*3<br>LATERAL RAISE 12*5</td>
+        </tr>
+        <tr>
+          <td>17658363142</td>
+          <td><a href="https://www.strava.com/activities/17658363142" target="_blank">重量训练（晚上）@練一下</a></td>
+          <td>2026-03-09 18:16:13</td>
+          <td>01:07:11</td>
+          <td>416.0</td>
+          <td>165</td>
+          <td>112.1</td>
+          <td>SQUAT 100 5 110 5*2 120 5*2<br>SPLIT SQUAT 20 10*5<br>BENCH PRESS 40 10*5</td>
+        </tr>
+        <tr>
+          <td>17668115822</td>
+          <td><a href="https://www.strava.com/activities/17668115822" target="_blank">重量训练（中午）</a></td>
+          <td>2026-03-10 12:29:50</td>
+          <td>00:28:30</td>
+          <td>232.0</td>
+          <td>158</td>
+          <td>124.1</td>
+          <td>KB SUITCASE STEP UP 16 12*5<br>DB SINGLE LEG RDL 10 10*5<br>DEAD BUG 3</td>
+        </tr>
+        <tr>
+          <td>17679849069</td>
+          <td><a href="https://www.strava.com/activities/17679849069" target="_blank">重量训练（上午）</a></td>
+          <td>2026-03-11 07:42:22</td>
+          <td>00:58:02</td>
+          <td>455.0</td>
+          <td>173</td>
+          <td>127.4</td>
+          <td>None</td>
+        </tr>
+        <tr>
+          <td>17681115242</td>
+          <td><a href="https://www.strava.com/activities/17681115242" target="_blank">重量训练（中午）</a></td>
+          <td>2026-03-11 12:35:13</td>
+          <td>00:20:02</td>
+          <td>176.0</td>
+          <td>155</td>
+          <td>123.2</td>
+          <td>None</td>
+        </tr>
+        <tr>
+          <td>17696484392</td>
+          <td><a href="https://www.strava.com/activities/17696484392" target="_blank">重量训练（晚上）</a></td>
+          <td>2026-03-12 19:34:57</td>
+          <td>01:16:29</td>
+          <td>586.0</td>
+          <td>160</td>
+          <td>126.1</td>
+          <td>BENCH PRESS 40 5 10<br>SQUAT 60 15*6<br>ROWING 60 10*5<br>DEADLIFT 60 15*5<br>LOWER CHEST PRESS 50 6*5<br>SHRUG 90 15*4<br>CALF RAISE (LEG PRESS) 80 15*3</td>
+        </tr>
+        <tr>
+          <td>17707504949</td>
+          <td><a href="https://www.strava.com/activities/17707504949" target="_blank">重量训练（晚上）</a></td>
+          <td>2026-03-13 19:24:33</td>
+          <td>01:22:14</td>
+          <td>704.0</td>
+          <td>165</td>
+          <td>131.8</td>
+          <td>SPLIT SQUAT 25 10*10<br>RDL 60 12*5<br>FRONT RAISE 17.5 12*5<br>SINGLE STRAIGHT ARM PULL DOWN 10 20*5<br>TANK PUSH 1 TRIP*5<br>BOSU RDL 8 20*1<br>VERTICAL JUMP 75 CM 5*1</td>
+        </tr>
+        <tr>
+          <td>17749735699</td>
+          <td><a href="https://www.strava.com/activities/17749735699" target="_blank">重量训练（中午）</a></td>
+          <td>2026-03-17 12:31:22</td>
+          <td>00:21:47</td>
+          <td>147.0</td>
+          <td>162</td>
+          <td>112.1</td>
+          <td>KB SUITCASE STEP UP 16 10*3<br>DEADBUG 12*5</td>
+        </tr>
+        <tr>
+          <td>17761424991</td>
+          <td><a href="https://www.strava.com/activities/17761424991" target="_blank">重量训练（上午）</a></td>
+          <td>2026-03-18 07:44:27</td>
+          <td>01:05:04</td>
+          <td>500.0</td>
+          <td>166</td>
+          <td>123.8</td>
+          <td>SQUAT 120 4*3 60 12*3<br>SINGLE LEG RDL 40 12*4<br>BARBELL CLAF RAISE 80 12*5<br>DB LUNG WALK 12 16*5<br>RUSSIAN TORSO TWIST 20 8*3</td>
+        </tr>
+        <tr>
+          <td>17773837652</td>
+          <td><a href="https://www.strava.com/activities/17773837652" target="_blank">重量训练（上午）</a></td>
+          <td>2026-03-19 07:37:57</td>
+          <td>01:09:56</td>
+          <td>528.0</td>
+          <td>158</td>
+          <td>124.1</td>
+          <td>SQUAT 60 12*10<br>ROWING 60 8*5<br>DB LATERAL RAISE 8 12*5<br>DB SINGLE SIDE FARMER WALK 36 30 STEPS*3<br>CABLE KICKBACK 7.9 15*5</td>
+        </tr>
+        <tr>
+          <td>17785981776</td>
+          <td><a href="https://www.strava.com/activities/17785981776" target="_blank">重量训练（上午）</a></td>
+          <td>2026-03-20 07:51:13</td>
+          <td>00:41:09</td>
+          <td>304.0</td>
+          <td>149</td>
+          <td>119.8</td>
+          <td>UPPER CHEST PRESS 30 10*5<br>DL 100 6*5<br>FRONT RAISE 15 15*5<br>SINGLE LEG EXTENSION 15 12*5</td>
+        </tr>
+        <tr>
+          <td>17840582383</td>
+          <td><a href="https://www.strava.com/activities/17840582383" target="_blank">重量训练（夜间）</a></td>
+          <td>2026-03-24 21:24:06</td>
+          <td>00:24:17</td>
+          <td>189.0</td>
+          <td>155</td>
+          <td>122.9</td>
+          <td>SQUAT 40 10 60 8 100 4*3<br>JUMP IN PLACE 4*3<br>SINGLE SIDE KB SWING 12 6*3<br>JUMP ROPE 30*3<br>BOSU SINGLE SIDE RDL  6 6*3</td>
+        </tr>
+        <tr>
+          <td>17849257251</td>
+          <td><a href="https://www.strava.com/activities/17849257251" target="_blank">重量训练（中午）</a></td>
+          <td>2026-03-25 12:38:28</td>
+          <td>00:20:23</td>
+          <td>111.0</td>
+          <td>120</td>
+          <td>98.6</td>
+          <td>SINGLE SIDE LEG EXTENSION 25 12*4<br>SINGLE SIDE LEG CURL 18 12*4<br>PRONE LEG CURL 32 10*2<br>CALF RAISE 73 20*3</td>
+        </tr>
+        <tr>
+          <td>17860300735</td>
+          <td><a href="https://www.strava.com/activities/17860300735" target="_blank">重量训练（上午）</a></td>
+          <td>2026-03-26 07:59:03</td>
+          <td>00:45:48</td>
+          <td>426.0</td>
+          <td>160</td>
+          <td>130.5</td>
+          <td>SPLIT SQUAT 30 10*5<br>ROWING 50 10*5<br>DB LATERAL RAISE 10 12*5<br>SHRUG 50 10*5</td>
+        </tr>
+        <tr>
+          <td>17861430739</td>
+          <td><a href="https://www.strava.com/activities/17861430739" target="_blank">重量训练（中午）</a></td>
+          <td>2026-03-26 12:26:01</td>
+          <td>00:24:38</td>
+          <td>174.0</td>
+          <td>164</td>
+          <td>111.6</td>
+          <td>KB SUITCASE STEP UP 12 10*3<br>DB FRONT RAISE 8 12*3<br>DEAD BUG 10*5</td>
+        </tr>
+        <tr>
+          <td>17903405049</td>
+          <td><a href="https://www.strava.com/activities/17903405049" target="_blank">重量训练（夜间）</a></td>
+          <td>2026-03-29 23:39:23</td>
+          <td>00:25:10</td>
+          <td>144.0</td>
+          <td>126</td>
+          <td>100.8</td>
+          <td>None</td>
+        </tr>
+        <tr>
+          <td>17908407913</td>
+          <td><a href="https://www.strava.com/activities/17908407913" target="_blank">重量训练（中午）</a></td>
+          <td>2026-03-30 12:30:32</td>
+          <td>00:27:04</td>
+          <td>171.0</td>
+          <td>141</td>
+          <td>106.2</td>
+          <td>LATERAL PULL 32 12*5<br>SHRUG 70 15*5<br>RIGHT HAND BICEPS SLOW ECCENTRIC (8S) 4 10*5</td>
+        </tr>
+        <tr>
+          <td>17910992335</td>
+          <td><a href="https://www.strava.com/activities/17910992335" target="_blank">重量训练（晚上）@練一下</a></td>
+          <td>2026-03-30 18:18:45</td>
+          <td>01:01:12</td>
+          <td>477.0</td>
+          <td>168</td>
+          <td>121.7</td>
+          <td>DUMBBELL SPLIT SQUAT 15 10*8<br>FLOOR BENCH PRESS 50 10*5<br>CHESS FLY 40 12*5<br>BENT-OVER ROW 30 15*3</td>
+        </tr>
+        <tr>
+          <td>17944818959</td>
+          <td><a href="https://www.strava.com/activities/17944818959" target="_blank">重量训练（上午）</a></td>
+          <td>2026-04-02 08:29:59</td>
+          <td>00:17:07</td>
+          <td>91.0</td>
+          <td>212</td>
+          <td>112.6</td>
+          <td>CHEST FLY 32 15*5<br>HIP ADDUCTION 45 15*3<br>HIP ABDUCTION 45 15*3</td>
+        </tr>
+        <tr>
+          <td>18001215810</td>
+          <td><a href="https://www.strava.com/activities/18001215810" target="_blank">重量训练（夜间）</a></td>
+          <td>2026-04-06 22:38:19</td>
+          <td>00:22:06</td>
+          <td>217.0</td>
+          <td>147</td>
+          <td>128.8</td>
+          <td>SQUAT 20 10 50 8 90 4*3<br>SINGLE SIDE KB SWING 14 4*3<br>BOX JUMP 45CM 6*3</td>
+        </tr>
+        <tr>
+          <td>18025514372</td>
+          <td><a href="https://www.strava.com/activities/18025514372" target="_blank">重量训练（晚上）@練一下</a></td>
+          <td>2026-04-08 18:16:46</td>
+          <td>00:56:15</td>
+          <td>413.0</td>
+          <td>152</td>
+          <td>117.8</td>
+          <td>DB SPLIT SQUAT 17.5 10*5 10 15*2<br>OVERHEAD DB TRICEPS EXTENSION  10 10<br>STRAIGHT ARM PULL DOWN 17.5 12*5<br>LEG EXTENSION 45LB 12*5<br>PECTORAL FLY 33 15*5</td>
+        </tr>
+        <tr>
+          <td>18038212073</td>
+          <td><a href="https://www.strava.com/activities/18038212073" target="_blank">重量训练（下午）</a></td>
+          <td>2026-04-09 16:58:04</td>
+          <td>00:46:55</td>
+          <td>408.0</td>
+          <td>165</td>
+          <td>129.1</td>
+          <td>DB WALKING LUNGE 14 18*1 12*4<br>FRONT RAISE 17.5 15*3<br>DB LATERAL RAISE 10 15*3<br>BENCH PRESS 50 5*5<br>STRAIGHT ARM PULL DOWN 32 15</td>
+        </tr>
+      </tbody>
+    </table>
+    <button id="backToTop" title="回到頂部">▲</button>
+    <div id="rowTooltip"></div>
+    <script src="script.js"></script>
+</body>

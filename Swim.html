@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游泳紀錄</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="filter-container" style="margin-bottom: 20px;">
+        <label for="startDate">起始日期：</label>
+        <input type="date" id="startDate" onchange="filterTable()">
+        <label for="endDate" style="margin-left: 20px;">結束日期：</label>
+        <input type="date" id="endDate" onchange="filterTable()">
+        <button onclick="resetFilter()" style="margin-left: 10px;">重設</button>
+    </div>
+    <table border="1" class="dataframe" id="myTable">
+      <thead>
+        <tr style="text-align: right;">
+          <th>ID</th>
+          <th>Name</th>
+          <th>Date</th>
+          <th>Pool</th>
+          <th>Elapsed Time</th>
+          <th>Moving Time</th>
+          <th>Calories</th>
+          <th>Max HR</th>
+          <th>Mean HR</th>
+          <th>Mean Speed</th>
+          <th>Distance</th>
+          <th>Moving Percentage</th>
+          <th>Mean Pace (100m)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>13370175401</td>
+          <td><a href="https://www.strava.com/activities/13370175401" target="_blank">傍晚游泳</a></td>
+          <td>2025-01-16 20:11:23</td>
+          <td>O</td>
+          <td>01:09:33</td>
+          <td>00:17:57</td>
+          <td>508.0</td>
+          <td>165</td>
+          <td>136.2</td>
+          <td>0.975</td>
+          <td>1050.0</td>
+          <td>25.81</td>
+          <td>1'43"</td>
+        </tr>
+        <tr>
+          <td>13527416813</td>
+          <td><a href="https://www.strava.com/activities/13527416813" target="_blank">傍晚游泳</a></td>
+          <td>2025-02-03 19:39:26</td>
+          <td>O</td>
+          <td>01:03:45</td>
+          <td>00:17:32</td>
+          <td>438.0</td>
+          <td>162</td>
+          <td>133.0</td>
+          <td>0.974</td>
+          <td>1025.0</td>
+          <td>27.50</td>
+          <td>1'43"</td>
+        </tr>
+        <tr>
+          <td>13669182913</td>
+          <td><a href="https://www.strava.com/activities/13669182913" target="_blank">傍晚游泳</a></td>
+          <td>2025-02-19 19:42:28</td>
+          <td>O</td>
+          <td>01:30:19</td>
+          <td>00:30:24</td>
+          <td>446.0</td>
+          <td>157</td>
+          <td>115.5</td>
+          <td>0.288</td>
+          <td>525.0</td>
+          <td>33.66</td>
+          <td>5'47"</td>
+        </tr>
+        <tr>
+          <td>13700551921</td>
+          <td><a href="https://www.strava.com/activities/13700551921" target="_blank">晨间游泳</a></td>
+          <td>2025-02-23 08:33:16</td>
+          <td>O</td>
+          <td>00:01:33</td>
+          <td>00:00:45</td>
+          <td>9.0</td>
+          <td>135</td>
+          <td>109.8</td>
+          <td>0.556</td>
+          <td>25.0</td>
+          <td>48.39</td>
+          <td>3'00"</td>
+        </tr>
+        <tr>
+          <td>13700552292</td>
+          <td><a href="https://www.strava.com/activities/13700552292" target="_blank">晨间游泳</a></td>
+          <td>2025-02-23 09:04:08</td>
+          <td>O</td>
+          <td>00:39:18</td>
+          <td>00:23:36</td>
+          <td>243.0</td>
+          <td>157</td>
+          <td>117.0</td>
+          <td>0.618</td>
+          <td>875.0</td>
+          <td>60.05</td>
+          <td>2'42"</td>
+        </tr>
+        <tr>
+          <td>13731976110</td>
+          <td><a href="https://www.strava.com/activities/13731976110" target="_blank">傍晚游泳</a></td>
+          <td>2025-02-26 19:14:58</td>
+          <td>O</td>
+          <td>01:34:47</td>
+          <td>00:15:48</td>
+          <td>487.0</td>
+          <td>155</td>
+          <td>115.8</td>
+          <td>0.791</td>
+          <td>750.0</td>
+          <td>16.67</td>
+          <td>2'06"</td>
+        </tr>
+        <tr>
+          <td>13768627432</td>
+          <td><a href="https://www.strava.com/activities/13768627432" target="_blank">傍晚游泳</a></td>
+          <td>2025-03-02 20:05:27</td>
+          <td>O</td>
+          <td>01:28:05</td>
+          <td>01:08:08</td>
+          <td>687.0</td>
+          <td>157</td>
+          <td>130.7</td>
+          <td>0.245</td>
+          <td>1000.0</td>
+          <td>77.35</td>
+          <td>6'48"</td>
+        </tr>
+        <tr>
+          <td>13795382861</td>
+          <td><a href="https://www.strava.com/activities/13795382861" target="_blank">傍晚游泳</a></td>
+          <td>2025-03-05 18:58:57</td>
+          <td>O</td>
+          <td>01:44:12</td>
+          <td>00:17:47</td>
+          <td>649.0</td>
+          <td>171</td>
+          <td>113.3</td>
+          <td>0.75</td>
+          <td>800.0</td>
+          <td>17.07</td>
+          <td>2'13"</td>
+        </tr>
+        <tr>
+          <td>13828384520</td>
+          <td><a href="https://www.strava.com/activities/13828384520" target="_blank">晨间游泳</a></td>
+          <td>2025-03-09 07:18:27</td>
+          <td>O</td>
+          <td>01:07:35</td>
+          <td>01:03:01</td>
+          <td>700.0</td>
+          <td>173</td>
+          <td>136.7</td>
+          <td>0.331</td>
+          <td>1250.0</td>
+          <td>93.24</td>
+          <td>5'02"</td>
+        </tr>
+        <tr>
+          <td>13851624129</td>
+          <td><a href="https://www.strava.com/activities/13851624129" target="_blank">傍晚游泳</a></td>
+          <td>2025-03-11 19:53:56</td>
+          <td>O</td>
+          <td>00:56:52</td>
+          <td>00:24:50</td>
+          <td>454.0</td>
+          <td>158</td>
+          <td>129.0</td>
+          <td>0.57</td>
+          <td>850.0</td>
+          <td>43.67</td>
+          <td>2'55"</td>
+        </tr>
+        <tr>
+          <td>13861027210</td>
+          <td><a href="https://www.strava.com/activities/13861027210" target="_blank">傍晚游泳</a></td>
+          <td>2025-03-12 18:31:23</td>
+          <td>O</td>
+          <td>00:54:28</td>
+          <td>00:07:08</td>
+          <td>386.0</td>
+          <td>168</td>
+          <td>125.0</td>
+          <td>0.701</td>
+          <td>300.0</td>
+          <td>13.10</td>
+          <td>2'23"</td>
+        </tr>
+        <tr>
+          <td>13861027850</td>
+          <td><a href="https://www.strava.com/activities/13861027850" target="_blank">傍晚游泳</a></td>
+          <td>2025-03-12 19:31:22</td>
+          <td>O</td>
+          <td>00:34:44</td>
+          <td>00:21:48</td>
+          <td>148.0</td>
+          <td>146</td>
+          <td>122.9</td>
+          <td>0.038</td>
+          <td>50.0</td>
+          <td>62.76</td>
+          <td>43'52"</td>
+        </tr>
+        <tr>
+          <td>13894800638</td>
+          <td><a href="https://www.strava.com/activities/13894800638" target="_blank">午后游泳</a></td>
+          <td>2025-03-16 14:22:20</td>
+          <td>O</td>
+          <td>01:06:25</td>
+          <td>00:27:14</td>
+          <td>549.0</td>
+          <td>163</td>
+          <td>125.2</td>
+          <td>0.581</td>
+          <td>950.0</td>
+          <td>41.00</td>
+          <td>2'52"</td>
+        </tr>
+        <tr>
+          <td>13915993376</td>
+          <td><a href="https://www.strava.com/activities/13915993376" target="_blank">傍晚游泳</a></td>
+          <td>2025-03-18 19:57:03</td>
+          <td>O</td>
+          <td>00:56:31</td>
+          <td>00:28:07</td>
+          <td>483.0</td>
+          <td>165</td>
+          <td>133.3</td>
+          <td>0.474</td>
+          <td>800.0</td>
+          <td>49.75</td>
+          <td>3'31"</td>
+        </tr>
+        <tr>
+          <td>13925938506</td>
+          <td><a href="https://www.strava.com/activities/13925938506" target="_blank">傍晚游泳</a></td>
+          <td>2025-03-19 19:12:16</td>
+          <td>O</td>
+          <td>01:44:50</td>
+          <td>00:26:41</td>
+          <td>682.0</td>
+          <td>167</td>
+          <td>122.0</td>
+          <td>0.344</td>
+          <td>550.0</td>
+          <td>25.45</td>
+          <td>4'51"</td>
+        </tr>
+        <tr>
+          <td>13950369356</td>
+          <td><a href="https://www.strava.com/activities/13950369356" target="_blank">午间游泳</a></td>
+          <td>2025-03-22 11:21:05</td>
+          <td>O</td>
+          <td>00:40:52</td>
+          <td>00:22:22</td>
+          <td>304.0</td>
+          <td>162</td>
+          <td>123.7</td>
+          <td>0.373</td>
+          <td>500.0</td>
+          <td>54.73</td>
+          <td>4'28"</td>
+        </tr>
+        <tr>
+          <td>13972551941</td>
+          <td><a href="https://www.strava.com/activities/13972551941" target="_blank">傍晚游泳</a></td>
+          <td>2025-03-24 19:37:27</td>
+          <td>O</td>
+          <td>01:13:26</td>
+          <td>00:37:04</td>
+          <td>613.0</td>
+          <td>177</td>
+          <td>137.8</td>
+          <td>0.45</td>
+          <td>1000.0</td>
+          <td>50.48</td>
+          <td>3'42"</td>
+        </tr>
+        <tr>
+          <td>13991721329</td>
+          <td><a href="https://www.strava.com/activities/13991721329" target="_blank">傍晚游泳</a></td>
+          <td>2025-03-26 18:29:56</td>
+          <td>O</td>
+          <td>01:46:06</td>
+          <td>01:38:51</td>
+          <td>525.0</td>
+          <td>159</td>
+          <td>119.8</td>
+          <td>0.173</td>
+          <td>1025.0</td>
+          <td>93.17</td>
+          <td>9'38"</td>
+        </tr>
+        <tr>
+          <td>14015692556</td>
+          <td><a href="https://www.strava.com/activities/14015692556" target="_blank">晨间游泳</a></td>
+          <td>2025-03-29 08:04:38</td>
+          <td>O</td>
+          <td>01:02:55</td>
+          <td>00:30:39</td>
+          <td>540.0</td>
+          <td>164</td>
+          <td>132.5</td>
+          <td>0.381</td>
+          <td>700.0</td>
+          <td>48.72</td>
+          <td>4'22"</td>
+        </tr>
+        <tr>
+          <td>14038582889</td>
+          <td><a href="https://www.strava.com/activities/14038582889" target="_blank">傍晚游泳</a></td>
+          <td>2025-03-31 20:27:47</td>
+          <td>O</td>
+          <td>01:15:21</td>
+          <td>01:13:00</td>
+          <td>479.0</td>
+          <td>163</td>
+          <td>124.3</td>
+          <td>0.303</td>
+          <td>1325.0</td>
+          <td>96.88</td>
+          <td>5'30"</td>
+        </tr>
+        <tr>
+          <td>14067353900</td>
+          <td><a href="https://www.strava.com/activities/14067353900" target="_blank">傍晚游泳</a></td>
+          <td>2025-04-03 18:41:31</td>
+          <td>O</td>
+          <td>01:05:58</td>
+          <td>00:31:11</td>
+          <td>550.0</td>
+          <td>172</td>
+          <td>135.7</td>
+          <td>0.534</td>
+          <td>1000.0</td>
+          <td>47.27</td>
+          <td>3'07"</td>
+        </tr>
+        <tr>
+          <td>14116527169</td>
+          <td><a href="https://www.strava.com/activities/14116527169" target="_blank">傍晚游泳</a></td>
+          <td>2025-04-08 20:37:51</td>
+          <td>O</td>
+          <td>01:06:16</td>
+          <td>00:28:32</td>
+          <td>602.0</td>
+          <td>173</td>
+          <td>136.9</td>
+          <td>0.526</td>
+          <td>900.0</td>
+          <td>43.06</td>
+          <td>3'10"</td>
+        </tr>
+        <tr>
+          <td>14126032580</td>
+          <td><a href="https://www.strava.com/activities/14126032580" target="_blank">傍晚游泳</a></td>
+          <td>2025-04-09 18:36:41</td>
+          <td>O</td>
+          <td>01:30:59</td>
+          <td>01:10:44</td>
+          <td>560.0</td>
+          <td>178</td>
+          <td>121.1</td>
+          <td>0.247</td>
+          <td>1050.0</td>
+          <td>77.74</td>
+          <td>6'45"</td>
+        </tr>
+        <tr>
+          <td>14136768704</td>
+          <td><a href="https://www.strava.com/activities/14136768704" target="_blank">傍晚游泳</a></td>
+          <td>2025-04-10 20:34:42</td>
+          <td>O</td>
+          <td>01:24:06</td>
+          <td>00:25:23</td>
+          <td>540.0</td>
+          <td>162</td>
+          <td>133.1</td>
+          <td>0.591</td>
+          <td>900.0</td>
+          <td>30.18</td>
+          <td>2'49"</td>
+        </tr>
+        <tr>
+          <td>14151267265</td>
+          <td><a href="https://www.strava.com/activities/14151267265" target="_blank">午间游泳</a></td>
+          <td>2025-04-12 11:25:44</td>
+          <td>O</td>
+          <td>00:53:27</td>
+          <td>00:10:10</td>
+          <td>382.0</td>
+          <td>166</td>
+          <td>123.4</td>
+          <td>0.738</td>
+          <td>450.0</td>
+          <td>19.02</td>
+          <td>2'16"</td>
+        </tr>
+        <tr>
+          <td>14174555087</td>
+          <td><a href="https://www.strava.com/activities/14174555087" target="_blank">傍晚游泳</a></td>
+          <td>2025-04-14 20:51:58</td>
+          <td>O</td>
+          <td>00:52:04</td>
+          <td>00:15:50</td>
+          <td>374.0</td>
+          <td>163</td>
+          <td>124.8</td>
+          <td>0.632</td>
+          <td>600.0</td>
+          <td>30.41</td>
+          <td>2'38"</td>
+        </tr>
+        <tr>
+          <td>14193902894</td>
+          <td><a href="https://www.strava.com/activities/14193902894" target="_blank">傍晚游泳</a></td>
+          <td>2025-04-16 19:11:27</td>
+          <td>O</td>
+          <td>02:02:32</td>
+          <td>00:41:56</td>
+          <td>873.0</td>
+          <td>167</td>
+          <td>124.6</td>
+          <td>0.427</td>
+          <td>1075.0</td>
+          <td>34.22</td>
+          <td>3'54"</td>
+        </tr>
+        <tr>
+          <td>14213027790</td>
+          <td><a href="https://www.strava.com/activities/14213027790" target="_blank">傍晚游泳</a></td>
+          <td>2025-04-18 20:20:13</td>
+          <td>O</td>
+          <td>01:00:25</td>
+          <td>00:21:48</td>
+          <td>480.0</td>
+          <td>176</td>
+          <td>131.3</td>
+          <td>0.612</td>
+          <td>800.0</td>
+          <td>36.08</td>
+          <td>2'43"</td>
+        </tr>
+        <tr>
+          <td>14251441225</td>
+          <td><a href="https://www.strava.com/activities/14251441225" target="_blank">傍晚游泳</a></td>
+          <td>2025-04-22 19:20:26</td>
+          <td>O</td>
+          <td>01:08:41</td>
+          <td>00:28:05</td>
+          <td>470.0</td>
+          <td>158</td>
+          <td>124.9</td>
+          <td>0.608</td>
+          <td>1025.0</td>
+          <td>40.89</td>
+          <td>2'44"</td>
+        </tr>
+        <tr>
+          <td>14272040710</td>
+          <td><a href="https://www.strava.com/activities/14272040710" target="_blank">傍晚游泳</a></td>
+          <td>2025-04-24 19:56:07</td>
+          <td>O</td>
+          <td>00:46:02</td>
+          <td>00:21:46</td>
+          <td>409.0</td>
+          <td>166</td>
+          <td>139.7</td>
+          <td>0.651</td>
+          <td>850.0</td>
+          <td>47.28</td>
+          <td>2'34"</td>
+        </tr>
+        <tr>
+          <td>14311722335</td>
+          <td><a href="https://www.strava.com/activities/14311722335" target="_blank">傍晚游泳</a></td>
+          <td>2025-04-28 20:56:45</td>
+          <td>O</td>
+          <td>00:48:56</td>
+          <td>00:21:11</td>
+          <td>389.0</td>
+          <td>159</td>
+          <td>129.7</td>
+          <td>0.629</td>
+          <td>800.0</td>
+          <td>43.29</td>
+          <td>2'39"</td>
+        </tr>
+        <tr>
+          <td>14321510799</td>
+          <td><a href="https://www.strava.com/activities/14321510799" target="_blank">傍晚游泳</a></td>
+          <td>2025-04-29 19:24:35</td>
+          <td>O</td>
+          <td>01:02:53</td>
+          <td>00:27:49</td>
+          <td>463.0</td>
+          <td>166</td>
+          <td>132.3</td>
+          <td>0.599</td>
+          <td>1000.0</td>
+          <td>44.24</td>
+          <td>2'47"</td>
+        </tr>
+        <tr>
+          <td>14332311164</td>
+          <td><a href="https://www.strava.com/activities/14332311164" target="_blank">傍晚游泳</a></td>
+          <td>2025-04-30 19:09:41</td>
+          <td>O</td>
+          <td>01:14:25</td>
+          <td>00:28:23</td>
+          <td>652.0</td>
+          <td>177</td>
+          <td>135.7</td>
+          <td>0.631</td>
+          <td>1075.0</td>
+          <td>38.14</td>
+          <td>2'38"</td>
+        </tr>
+        <tr>
+          <td>14359598261</td>
+          <td><a href="https://www.strava.com/activities/14359598261" target="_blank">晨间游泳</a></td>
+          <td>2025-05-03 08:54:53</td>
+          <td>O</td>
+          <td>00:19:34</td>
+          <td>00:11:02</td>
+          <td>200.0</td>
+          <td>180</td>
+          <td>139.9</td>
+          <td>0.529</td>
+          <td>350.0</td>
+          <td>56.39</td>
+          <td>3'09"</td>
+        </tr>
+        <tr>
+          <td>14384888591</td>
+          <td><a href="https://www.strava.com/activities/14384888591" target="_blank">晚间游泳</a></td>
+          <td>2025-05-05 21:08:16</td>
+          <td>O</td>
+          <td>00:18:51</td>
+          <td>00:11:02</td>
+          <td>228.0</td>
+          <td>170</td>
+          <td>144.1</td>
+          <td>0.566</td>
+          <td>375.0</td>
+          <td>58.53</td>
+          <td>2'57"</td>
+        </tr>
+        <tr>
+          <td>14384889258</td>
+          <td><a href="https://www.strava.com/activities/14384889258" target="_blank">晚间游泳</a></td>
+          <td>2025-05-05 21:27:19</td>
+          <td>O</td>
+          <td>00:18:00</td>
+          <td>00:07:58</td>
+          <td>168.0</td>
+          <td>163</td>
+          <td>138.0</td>
+          <td>0.575</td>
+          <td>275.0</td>
+          <td>44.26</td>
+          <td>2'54"</td>
+        </tr>
+        <tr>
+          <td>14425180478</td>
+          <td><a href="https://www.strava.com/activities/14425180478" target="_blank">傍晚游泳</a></td>
+          <td>2025-05-09 19:59:26</td>
+          <td>O</td>
+          <td>00:18:38</td>
+          <td>00:11:22</td>
+          <td>213.0</td>
+          <td>167</td>
+          <td>133.0</td>
+          <td>0.623</td>
+          <td>425.0</td>
+          <td>61.00</td>
+          <td>2'41"</td>
+        </tr>
+        <tr>
+          <td>14425180710</td>
+          <td><a href="https://www.strava.com/activities/14425180710" target="_blank">傍晚游泳</a></td>
+          <td>2025-05-09 20:18:41</td>
+          <td>O</td>
+          <td>00:24:21</td>
+          <td>00:10:15</td>
+          <td>208.0</td>
+          <td>163</td>
+          <td>127.8</td>
+          <td>0.65</td>
+          <td>400.0</td>
+          <td>42.09</td>
+          <td>2'34"</td>
+        </tr>
+        <tr>
+          <td>14466035371</td>
+          <td><a href="https://www.strava.com/activities/14466035371" target="_blank">傍晚游泳</a></td>
+          <td>2025-05-13 19:53:18</td>
+          <td>O</td>
+          <td>00:18:30</td>
+          <td>00:11:17</td>
+          <td>132.0</td>
+          <td>146</td>
+          <td>119.2</td>
+          <td>0.591</td>
+          <td>400.0</td>
+          <td>60.99</td>
+          <td>2'49"</td>
+        </tr>
+        <tr>
+          <td>14466296992</td>
+          <td><a href="https://www.strava.com/activities/14466296992" target="_blank">傍晚游泳</a></td>
+          <td>2025-05-13 20:12:24</td>
+          <td>O</td>
+          <td>00:27:52</td>
+          <td>00:08:39</td>
+          <td>101.0</td>
+          <td>133</td>
+          <td>100.6</td>
+          <td>0.53</td>
+          <td>275.0</td>
+          <td>31.04</td>
+          <td>3'09"</td>
+        </tr>
+        <tr>
+          <td>14538601828</td>
+          <td><a href="https://www.strava.com/activities/14538601828" target="_blank">傍晚游泳</a></td>
+          <td>2025-05-20 18:54:40</td>
+          <td>O</td>
+          <td>00:59:39</td>
+          <td>00:26:55</td>
+          <td>470.0</td>
+          <td>172</td>
+          <td>136.8</td>
+          <td>0.619</td>
+          <td>1000.0</td>
+          <td>45.12</td>
+          <td>2'42"</td>
+        </tr>
+        <tr>
+          <td>14549680450</td>
+          <td><a href="https://www.strava.com/activities/14549680450" target="_blank">傍晚游泳</a></td>
+          <td>2025-05-21 19:25:38</td>
+          <td>O</td>
+          <td>00:35:03</td>
+          <td>00:19:50</td>
+          <td>333.0</td>
+          <td>166</td>
+          <td>136.9</td>
+          <td>0.504</td>
+          <td>600.0</td>
+          <td>56.59</td>
+          <td>3'18"</td>
+        </tr>
+        <tr>
+          <td>14565619723</td>
+          <td><a href="https://www.strava.com/activities/14565619723" target="_blank">晨间游泳</a></td>
+          <td>2025-05-23 06:57:01</td>
+          <td>O</td>
+          <td>00:38:55</td>
+          <td>00:18:26</td>
+          <td>346.0</td>
+          <td>173</td>
+          <td>138.4</td>
+          <td>0.542</td>
+          <td>600.0</td>
+          <td>47.37</td>
+          <td>3'05"</td>
+        </tr>
+        <tr>
+          <td>14575051156</td>
+          <td><a href="https://www.strava.com/activities/14575051156" target="_blank">晨间游泳</a></td>
+          <td>2025-05-24 07:38:35</td>
+          <td>O</td>
+          <td>01:21:47</td>
+          <td>00:24:00</td>
+          <td>586.0</td>
+          <td>180</td>
+          <td>135.9</td>
+          <td>0.556</td>
+          <td>800.0</td>
+          <td>29.35</td>
+          <td>3'00"</td>
+        </tr>
+        <tr>
+          <td>14584935999</td>
+          <td><a href="https://www.strava.com/activities/14584935999" target="_blank">晨间游泳</a></td>
+          <td>2025-05-25 07:04:27</td>
+          <td>O</td>
+          <td>01:01:24</td>
+          <td>00:31:46</td>
+          <td>647.0</td>
+          <td>181</td>
+          <td>143.5</td>
+          <td>0.538</td>
+          <td>1025.0</td>
+          <td>51.74</td>
+          <td>3'06"</td>
+        </tr>
+        <tr>
+          <td>14599790336</td>
+          <td><a href="https://www.strava.com/activities/14599790336" target="_blank">傍晚游泳</a></td>
+          <td>2025-05-26 20:56:28</td>
+          <td>O</td>
+          <td>00:24:38</td>
+          <td>00:16:16</td>
+          <td>233.0</td>
+          <td>156</td>
+          <td>138.2</td>
+          <td>0.512</td>
+          <td>500.0</td>
+          <td>66.04</td>
+          <td>3'15"</td>
+        </tr>
+        <tr>
+          <td>14605600245</td>
+          <td><a href="https://www.strava.com/activities/14605600245" target="_blank">晨间游泳</a></td>
+          <td>2025-05-27 06:57:03</td>
+          <td>O</td>
+          <td>01:09:26</td>
+          <td>00:34:39</td>
+          <td>425.0</td>
+          <td>166</td>
+          <td>130.7</td>
+          <td>0.493</td>
+          <td>1025.0</td>
+          <td>49.90</td>
+          <td>3'23"</td>
+        </tr>
+        <tr>
+          <td>14760575007</td>
+          <td><a href="https://www.strava.com/activities/14760575007" target="_blank">晨间游泳</a></td>
+          <td>2025-06-11 06:45:10</td>
+          <td>O</td>
+          <td>00:42:59</td>
+          <td>00:22:06</td>
+          <td>445.0</td>
+          <td>172</td>
+          <td>145.2</td>
+          <td>0.547</td>
+          <td>725.0</td>
+          <td>51.42</td>
+          <td>3'03"</td>
+        </tr>
+        <tr>
+          <td>14771728841</td>
+          <td><a href="https://www.strava.com/activities/14771728841" target="_blank">晨间游泳</a></td>
+          <td>2025-06-12 06:58:47</td>
+          <td>O</td>
+          <td>00:46:50</td>
+          <td>00:28:29</td>
+          <td>588.0</td>
+          <td>174</td>
+          <td>150.2</td>
+          <td>0.497</td>
+          <td>850.0</td>
+          <td>60.82</td>
+          <td>3'21"</td>
+        </tr>
+        <tr>
+          <td>14786418372</td>
+          <td><a href="https://www.strava.com/activities/14786418372" target="_blank">傍晚游泳</a></td>
+          <td>2025-06-13 19:55:44</td>
+          <td>O</td>
+          <td>01:06:54</td>
+          <td>00:36:45</td>
+          <td>663.0</td>
+          <td>174</td>
+          <td>146.6</td>
+          <td>0.544</td>
+          <td>1200.0</td>
+          <td>54.93</td>
+          <td>3'04"</td>
+        </tr>
+        <tr>
+          <td>14791285884</td>
+          <td><a href="https://www.strava.com/activities/14791285884" target="_blank">晨间游泳</a></td>
+          <td>2025-06-14 07:30:05</td>
+          <td>O</td>
+          <td>00:46:56</td>
+          <td>00:23:22</td>
+          <td>439.0</td>
+          <td>172</td>
+          <td>140.8</td>
+          <td>0.588</td>
+          <td>825.0</td>
+          <td>49.79</td>
+          <td>2'50"</td>
+        </tr>
+        <tr>
+          <td>14802595445</td>
+          <td><a href="https://www.strava.com/activities/14802595445" target="_blank">晨间游泳</a></td>
+          <td>2025-06-15 10:58:35</td>
+          <td>O</td>
+          <td>00:51:01</td>
+          <td>00:29:36</td>
+          <td>515.0</td>
+          <td>173</td>
+          <td>143.6</td>
+          <td>0.563</td>
+          <td>1000.0</td>
+          <td>58.02</td>
+          <td>2'58"</td>
+        </tr>
+        <tr>
+          <td>14816411406</td>
+          <td><a href="https://www.strava.com/activities/14816411406" target="_blank">傍晚游泳</a></td>
+          <td>2025-06-16 19:55:35</td>
+          <td>O</td>
+          <td>00:48:19</td>
+          <td>00:29:04</td>
+          <td>536.0</td>
+          <td>164</td>
+          <td>149.4</td>
+          <td>0.616</td>
+          <td>1075.0</td>
+          <td>60.16</td>
+          <td>2'42"</td>
+        </tr>
+        <tr>
+          <td>14822243804</td>
+          <td><a href="https://www.strava.com/activities/14822243804" target="_blank">晨间游泳</a></td>
+          <td>2025-06-17 06:58:40</td>
+          <td>O</td>
+          <td>00:31:00</td>
+          <td>00:23:04</td>
+          <td>328.0</td>
+          <td>169</td>
+          <td>141.9</td>
+          <td>0.596</td>
+          <td>825.0</td>
+          <td>74.41</td>
+          <td>2'48"</td>
+        </tr>
+        <tr>
+          <td>14844460151</td>
+          <td><a href="https://www.strava.com/activities/14844460151" target="_blank">晨间游泳</a></td>
+          <td>2025-06-19 07:32:20</td>
+          <td>O</td>
+          <td>00:24:22</td>
+          <td>00:17:14</td>
+          <td>282.0</td>
+          <td>164</td>
+          <td>147.7</td>
+          <td>0.58</td>
+          <td>600.0</td>
+          <td>70.73</td>
+          <td>2'52"</td>
+        </tr>
+        <tr>
+          <td>14849644601</td>
+          <td><a href="https://www.strava.com/activities/14849644601" target="_blank">傍晚游泳</a></td>
+          <td>2025-06-19 20:22:29</td>
+          <td>O</td>
+          <td>01:06:55</td>
+          <td>00:35:29</td>
+          <td>597.0</td>
+          <td>167</td>
+          <td>148.0</td>
+          <td>0.54</td>
+          <td>1150.0</td>
+          <td>53.03</td>
+          <td>3'05"</td>
+        </tr>
+        <tr>
+          <td>14875345820</td>
+          <td><a href="https://www.strava.com/activities/14875345820" target="_blank">晨间游泳</a></td>
+          <td>2025-06-22 07:27:41</td>
+          <td>O</td>
+          <td>00:55:32</td>
+          <td>00:33:11</td>
+          <td>554.0</td>
+          <td>169</td>
+          <td>143.7</td>
+          <td>0.565</td>
+          <td>1125.0</td>
+          <td>59.75</td>
+          <td>2'57"</td>
+        </tr>
+        <tr>
+          <td>14895890175</td>
+          <td><a href="https://www.strava.com/activities/14895890175" target="_blank">晨间游泳</a></td>
+          <td>2025-06-24 07:48:56</td>
+          <td>O</td>
+          <td>00:53:50</td>
+          <td>00:36:52</td>
+          <td>310.0</td>
+          <td>153</td>
+          <td>111.0</td>
+          <td>0.565</td>
+          <td>1250.0</td>
+          <td>68.48</td>
+          <td>2'57"</td>
+        </tr>
+        <tr>
+          <td>14910582122</td>
+          <td><a href="https://www.strava.com/activities/14910582122" target="_blank">傍晚游泳</a></td>
+          <td>2025-06-25 18:17:16</td>
+          <td>O</td>
+          <td>01:25:58</td>
+          <td>00:41:17</td>
+          <td>656.0</td>
+          <td>174</td>
+          <td>131.0</td>
+          <td>0.767</td>
+          <td>1900.0</td>
+          <td>48.02</td>
+          <td>2'10"</td>
+        </tr>
+        <tr>
+          <td>14936835111</td>
+          <td><a href="https://www.strava.com/activities/14936835111" target="_blank">晨间游泳</a></td>
+          <td>2025-06-28 07:16:00</td>
+          <td>O</td>
+          <td>01:17:01</td>
+          <td>00:52:15</td>
+          <td>640.0</td>
+          <td>170</td>
+          <td>135.2</td>
+          <td>0.574</td>
+          <td>1800.0</td>
+          <td>67.84</td>
+          <td>2'54"</td>
+        </tr>
+        <tr>
+          <td>15040470935</td>
+          <td><a href="https://www.strava.com/activities/15040470935" target="_blank">晨间游泳</a></td>
+          <td>2025-07-08 07:27:41</td>
+          <td>O</td>
+          <td>00:35:32</td>
+          <td>00:23:34</td>
+          <td>340.0</td>
+          <td>170</td>
+          <td>137.1</td>
+          <td>0.583</td>
+          <td>825.0</td>
+          <td>66.32</td>
+          <td>2'52"</td>
+        </tr>
+        <tr>
+          <td>15057156361</td>
+          <td><a href="https://www.strava.com/activities/15057156361" target="_blank">傍晚游泳</a></td>
+          <td>2025-07-09 20:20:32</td>
+          <td>O</td>
+          <td>01:05:25</td>
+          <td>00:44:13</td>
+          <td>611.0</td>
+          <td>163</td>
+          <td>146.7</td>
+          <td>0.575</td>
+          <td>1525.0</td>
+          <td>67.59</td>
+          <td>2'54"</td>
+        </tr>
+        <tr>
+          <td>15068389662</td>
+          <td><a href="https://www.strava.com/activities/15068389662" target="_blank">傍晚游泳</a></td>
+          <td>2025-07-10 20:23:45</td>
+          <td>O</td>
+          <td>00:59:12</td>
+          <td>00:52:11</td>
+          <td>484.0</td>
+          <td>165</td>
+          <td>129.6</td>
+          <td>0.655</td>
+          <td>2050.0</td>
+          <td>88.15</td>
+          <td>2'33"</td>
+        </tr>
+        <tr>
+          <td>15100286248</td>
+          <td><a href="https://www.strava.com/activities/15100286248" target="_blank">傍晚游泳</a></td>
+          <td>2025-07-13 19:49:56</td>
+          <td>O</td>
+          <td>01:09:14</td>
+          <td>00:58:14</td>
+          <td>863.0</td>
+          <td>172</td>
+          <td>159.8</td>
+          <td>0.644</td>
+          <td>2250.0</td>
+          <td>84.11</td>
+          <td>2'35"</td>
+        </tr>
+        <tr>
+          <td>15120552744</td>
+          <td><a href="https://www.strava.com/activities/15120552744" target="_blank">傍晚游泳</a></td>
+          <td>2025-07-15 18:25:57</td>
+          <td>O</td>
+          <td>01:01:10</td>
+          <td>00:56:49</td>
+          <td>694.0</td>
+          <td>176</td>
+          <td>153.2</td>
+          <td>0.55</td>
+          <td>1875.0</td>
+          <td>92.89</td>
+          <td>3'02"</td>
+        </tr>
+        <tr>
+          <td>15139080720</td>
+          <td><a href="https://www.strava.com/activities/15139080720" target="_blank">晨间游泳</a></td>
+          <td>2025-07-17 07:25:49</td>
+          <td>O</td>
+          <td>00:37:00</td>
+          <td>00:27:20</td>
+          <td>427.0</td>
+          <td>172</td>
+          <td>150.9</td>
+          <td>0.64</td>
+          <td>1050.0</td>
+          <td>73.87</td>
+          <td>2'36"</td>
+        </tr>
+        <tr>
+          <td>15160199774</td>
+          <td><a href="https://www.strava.com/activities/15160199774" target="_blank">晨间游泳</a></td>
+          <td>2025-07-19 07:17:21</td>
+          <td>O</td>
+          <td>01:02:11</td>
+          <td>00:46:49</td>
+          <td>539.0</td>
+          <td>173</td>
+          <td>133.1</td>
+          <td>0.552</td>
+          <td>1550.0</td>
+          <td>75.29</td>
+          <td>3'01"</td>
+        </tr>
+        <tr>
+          <td>15197292831</td>
+          <td><a href="https://www.strava.com/activities/15197292831" target="_blank">傍晚游泳</a></td>
+          <td>2025-07-22 18:52:44</td>
+          <td>O</td>
+          <td>01:32:07</td>
+          <td>01:09:20</td>
+          <td>876.0</td>
+          <td>176</td>
+          <td>150.6</td>
+          <td>0.625</td>
+          <td>2600.0</td>
+          <td>75.27</td>
+          <td>2'40"</td>
+        </tr>
+        <tr>
+          <td>15230689340</td>
+          <td><a href="https://www.strava.com/activities/15230689340" target="_blank">傍晚游泳</a></td>
+          <td>2025-07-25 18:58:59</td>
+          <td>O</td>
+          <td>00:53:55</td>
+          <td>00:51:07</td>
+          <td>660.0</td>
+          <td>168</td>
+          <td>159.0</td>
+          <td>0.652</td>
+          <td>2000.0</td>
+          <td>94.81</td>
+          <td>2'33"</td>
+        </tr>
+        <tr>
+          <td>15296982643</td>
+          <td><a href="https://www.strava.com/activities/15296982643" target="_blank">傍晚游泳</a></td>
+          <td>2025-07-31 18:48:57</td>
+          <td>O</td>
+          <td>01:28:22</td>
+          <td>01:14:18</td>
+          <td>960.0</td>
+          <td>165</td>
+          <td>150.2</td>
+          <td>0.516</td>
+          <td>2300.0</td>
+          <td>84.08</td>
+          <td>3'14"</td>
+        </tr>
+        <tr>
+          <td>15314607203</td>
+          <td><a href="https://www.strava.com/activities/15314607203" target="_blank">午间游泳</a></td>
+          <td>2025-08-02 11:07:04</td>
+          <td>O</td>
+          <td>01:02:17</td>
+          <td>00:49:49</td>
+          <td>716.0</td>
+          <td>169</td>
+          <td>150.4</td>
+          <td>0.569</td>
+          <td>1700.0</td>
+          <td>79.98</td>
+          <td>2'56"</td>
+        </tr>
+        <tr>
+          <td>15330669174</td>
+          <td><a href="https://www.strava.com/activities/15330669174" target="_blank">傍晚游泳</a></td>
+          <td>2025-08-03 20:14:54</td>
+          <td>O</td>
+          <td>00:59:39</td>
+          <td>00:57:25</td>
+          <td>629.0</td>
+          <td>167</td>
+          <td>157.1</td>
+          <td>0.646</td>
+          <td>2225.0</td>
+          <td>96.26</td>
+          <td>2'35"</td>
+        </tr>
+        <tr>
+          <td>15351408191</td>
+          <td><a href="https://www.strava.com/activities/15351408191" target="_blank">傍晚游泳</a></td>
+          <td>2025-08-05 18:35:04</td>
+          <td>O</td>
+          <td>01:02:51</td>
+          <td>01:02:19</td>
+          <td>544.0</td>
+          <td>165</td>
+          <td>148.1</td>
+          <td>0.535</td>
+          <td>2000.0</td>
+          <td>99.15</td>
+          <td>3'07"</td>
+        </tr>
+        <tr>
+          <td>15376251342</td>
+          <td><a href="https://www.strava.com/activities/15376251342" target="_blank">傍晚游泳</a></td>
+          <td>2025-08-07 18:45:00</td>
+          <td>O</td>
+          <td>01:02:20</td>
+          <td>00:35:02</td>
+          <td>728.0</td>
+          <td>177</td>
+          <td>152.1</td>
+          <td>0.714</td>
+          <td>1500.0</td>
+          <td>56.20</td>
+          <td>2'20"</td>
+        </tr>
+        <tr>
+          <td>15431825162</td>
+          <td><a href="https://www.strava.com/activities/15431825162" target="_blank">傍晚游泳</a></td>
+          <td>2025-08-12 18:52:26</td>
+          <td>O</td>
+          <td>00:48:19</td>
+          <td>00:42:19</td>
+          <td>484.0</td>
+          <td>181</td>
+          <td>155.3</td>
+          <td>0.591</td>
+          <td>1500.0</td>
+          <td>87.58</td>
+          <td>2'49"</td>
+        </tr>
+        <tr>
+          <td>15455055119</td>
+          <td><a href="https://www.strava.com/activities/15455055119" target="_blank">傍晚游泳</a></td>
+          <td>2025-08-14 18:28:31</td>
+          <td>O</td>
+          <td>00:48:52</td>
+          <td>00:32:21</td>
+          <td>491.0</td>
+          <td>162</td>
+          <td>143.6</td>
+          <td>0.644</td>
+          <td>1250.0</td>
+          <td>66.20</td>
+          <td>2'35"</td>
+        </tr>
+        <tr>
+          <td>15511919136</td>
+          <td><a href="https://www.strava.com/activities/15511919136" target="_blank">傍晚游泳&大湖</a></td>
+          <td>2025-08-19 19:14:44</td>
+          <td>O</td>
+          <td>01:21:57</td>
+          <td>01:14:59</td>
+          <td>740.0</td>
+          <td>171</td>
+          <td>142.4</td>
+          <td>0.589</td>
+          <td>2650.0</td>
+          <td>91.50</td>
+          <td>2'50"</td>
+        </tr>
+        <tr>
+          <td>15563902154</td>
+          <td><a href="https://www.strava.com/activities/15563902154" target="_blank">晨间游泳</a></td>
+          <td>2025-08-24 07:37:01</td>
+          <td>O</td>
+          <td>01:09:59</td>
+          <td>01:04:43</td>
+          <td>787.0</td>
+          <td>171</td>
+          <td>153.9</td>
+          <td>0.528</td>
+          <td>2050.0</td>
+          <td>92.47</td>
+          <td>3'09"</td>
+        </tr>
+        <tr>
+          <td>15591732634</td>
+          <td><a href="https://www.strava.com/activities/15591732634" target="_blank">傍晚游泳</a></td>
+          <td>2025-08-26 18:54:46</td>
+          <td>O</td>
+          <td>01:25:28</td>
+          <td>01:19:54</td>
+          <td>945.0</td>
+          <td>183</td>
+          <td>155.4</td>
+          <td>0.568</td>
+          <td>2725.0</td>
+          <td>93.49</td>
+          <td>2'56"</td>
+        </tr>
+        <tr>
+          <td>15615106767</td>
+          <td><a href="https://www.strava.com/activities/15615106767" target="_blank">傍晚游泳</a></td>
+          <td>2025-08-28 18:42:35</td>
+          <td>O</td>
+          <td>00:54:45</td>
+          <td>00:27:02</td>
+          <td>420.0</td>
+          <td>163</td>
+          <td>136.9</td>
+          <td>0.617</td>
+          <td>1000.0</td>
+          <td>49.38</td>
+          <td>2'42"</td>
+        </tr>
+        <tr>
+          <td>15632324107</td>
+          <td><a href="https://www.strava.com/activities/15632324107" target="_blank">晨间游泳 柯子林</a></td>
+          <td>2025-08-30 09:02:09</td>
+          <td>X</td>
+          <td>01:12:47</td>
+          <td>01:10:17</td>
+          <td>551.0</td>
+          <td>158</td>
+          <td>130.8</td>
+          <td>0.406</td>
+          <td>1710.1</td>
+          <td>96.57</td>
+          <td>4'06"</td>
+        </tr>
+        <tr>
+          <td>15655191514</td>
+          <td><a href="https://www.strava.com/activities/15655191514" target="_blank">晨间游泳 外木山海泳</a></td>
+          <td>2025-09-01 10:23:55</td>
+          <td>X</td>
+          <td>01:11:25</td>
+          <td>00:58:22</td>
+          <td>472.0</td>
+          <td>182</td>
+          <td>140.1</td>
+          <td>0.345</td>
+          <td>1209.6</td>
+          <td>81.73</td>
+          <td>4'50"</td>
+        </tr>
+        <tr>
+          <td>15711782555</td>
+          <td><a href="https://www.strava.com/activities/15711782555" target="_blank">晨间游泳</a></td>
+          <td>2025-09-06 08:44:37</td>
+          <td>X</td>
+          <td>01:28:12</td>
+          <td>01:15:58</td>
+          <td>704.0</td>
+          <td>174</td>
+          <td>140.9</td>
+          <td>0.451</td>
+          <td>2057.8</td>
+          <td>86.13</td>
+          <td>3'42"</td>
+        </tr>
+        <tr>
+          <td>15723449176</td>
+          <td><a href="https://www.strava.com/activities/15723449176" target="_blank">晨间游泳</a></td>
+          <td>2025-09-07 08:30:46</td>
+          <td>X</td>
+          <td>01:22:50</td>
+          <td>01:21:20</td>
+          <td>611.0</td>
+          <td>145</td>
+          <td>129.2</td>
+          <td>0.428</td>
+          <td>2087.8</td>
+          <td>98.19</td>
+          <td>3'54"</td>
+        </tr>
+        <tr>
+          <td>15774332967</td>
+          <td><a href="https://www.strava.com/activities/15774332967" target="_blank">傍晚游泳</a></td>
+          <td>2025-09-11 18:54:02</td>
+          <td>O</td>
+          <td>01:08:02</td>
+          <td>00:53:28</td>
+          <td>689.0</td>
+          <td>176</td>
+          <td>150.2</td>
+          <td>0.491</td>
+          <td>1575.0</td>
+          <td>78.59</td>
+          <td>3'24"</td>
+        </tr>
+        <tr>
+          <td>15853546205</td>
+          <td><a href="https://www.strava.com/activities/15853546205" target="_blank">傍晚游泳</a></td>
+          <td>2025-09-18 19:25:52</td>
+          <td>O</td>
+          <td>01:25:56</td>
+          <td>01:17:04</td>
+          <td>853.0</td>
+          <td>163</td>
+          <td>150.1</td>
+          <td>0.454</td>
+          <td>2100.0</td>
+          <td>89.68</td>
+          <td>3'40"</td>
+        </tr>
+        <tr>
+          <td>15942301704</td>
+          <td><a href="https://www.strava.com/activities/15942301704" target="_blank">傍晚游泳</a></td>
+          <td>2025-09-26 20:06:23</td>
+          <td>O</td>
+          <td>01:08:42</td>
+          <td>01:08:09</td>
+          <td>694.0</td>
+          <td>171</td>
+          <td>137.7</td>
+          <td>0.501</td>
+          <td>2050.0</td>
+          <td>99.20</td>
+          <td>3'20"</td>
+        </tr>
+        <tr>
+          <td>15971020556</td>
+          <td><a href="https://www.strava.com/activities/15971020556" target="_blank">晨间游泳</a></td>
+          <td>2025-09-29 07:40:51</td>
+          <td>O</td>
+          <td>01:09:23</td>
+          <td>00:48:57</td>
+          <td>599.0</td>
+          <td>173</td>
+          <td>134.7</td>
+          <td>0.511</td>
+          <td>1500.0</td>
+          <td>70.55</td>
+          <td>3'16"</td>
+        </tr>
+        <tr>
+          <td>16693458199</td>
+          <td><a href="https://www.strava.com/activities/16693458199" target="_blank">傍晚游泳</a></td>
+          <td>2025-12-09 19:52:54</td>
+          <td>O</td>
+          <td>01:02:13</td>
+          <td>00:40:31</td>
+          <td>608.0</td>
+          <td>170</td>
+          <td>142.9</td>
+          <td>0.432</td>
+          <td>1050.0</td>
+          <td>65.12</td>
+          <td>3'51"</td>
+        </tr>
+        <tr>
+          <td>17494231248</td>
+          <td><a href="https://www.strava.com/activities/17494231248" target="_blank">晚间游泳</a></td>
+          <td>2026-02-23 21:00:24</td>
+          <td>O</td>
+          <td>00:50:28</td>
+          <td>00:26:36</td>
+          <td>499.0</td>
+          <td>165</td>
+          <td>136.2</td>
+          <td>0.517</td>
+          <td>825.0</td>
+          <td>52.71</td>
+          <td>3'13"</td>
+        </tr>
+        <tr>
+          <td>17517841841</td>
+          <td><a href="https://www.strava.com/activities/17517841841" target="_blank">傍晚游泳</a></td>
+          <td>2026-02-25 20:19:02</td>
+          <td>O</td>
+          <td>01:00:32</td>
+          <td>00:36:33</td>
+          <td>616.0</td>
+          <td>189</td>
+          <td>139.4</td>
+          <td>0.502</td>
+          <td>1100.0</td>
+          <td>60.38</td>
+          <td>3'19"</td>
+        </tr>
+        <tr>
+          <td>17547640332</td>
+          <td><a href="https://www.strava.com/activities/17547640332" target="_blank">晨间游泳@三重運動中心</a></td>
+          <td>2026-02-28 09:21:09</td>
+          <td>O</td>
+          <td>00:56:14</td>
+          <td>00:34:30</td>
+          <td>331.0</td>
+          <td>160</td>
+          <td>102.6</td>
+          <td>0.483</td>
+          <td>1000.0</td>
+          <td>61.35</td>
+          <td>3'27"</td>
+        </tr>
+        <tr>
+          <td>17560322294</td>
+          <td><a href="https://www.strava.com/activities/17560322294" target="_blank">午后游泳@三重運動中心</a></td>
+          <td>2026-03-01 13:58:14</td>
+          <td>O</td>
+          <td>00:53:38</td>
+          <td>00:38:10</td>
+          <td>569.0</td>
+          <td>171</td>
+          <td>139.4</td>
+          <td>0.48</td>
+          <td>1100.0</td>
+          <td>71.16</td>
+          <td>3'28"</td>
+        </tr>
+        <tr>
+          <td>17600201568</td>
+          <td><a href="https://www.strava.com/activities/17600201568" target="_blank">傍晚游泳</a></td>
+          <td>2026-03-04 19:52:28</td>
+          <td>O</td>
+          <td>01:05:20</td>
+          <td>00:52:10</td>
+          <td>687.0</td>
+          <td>164</td>
+          <td>136.5</td>
+          <td>0.479</td>
+          <td>1500.0</td>
+          <td>79.85</td>
+          <td>3'29"</td>
+        </tr>
+        <tr>
+          <td>17766465202</td>
+          <td><a href="https://www.strava.com/activities/17766465202" target="_blank">傍晚游泳</a></td>
+          <td>2026-03-18 19:43:04</td>
+          <td>O</td>
+          <td>01:08:37</td>
+          <td>00:55:38</td>
+          <td>756.0</td>
+          <td>191</td>
+          <td>146.4</td>
+          <td>0.449</td>
+          <td>1500.0</td>
+          <td>81.08</td>
+          <td>3'43"</td>
+        </tr>
+        <tr>
+          <td>17790968171</td>
+          <td><a href="https://www.strava.com/activities/17790968171" target="_blank">傍晚游泳</a></td>
+          <td>2026-03-20 20:44:36</td>
+          <td>O</td>
+          <td>00:26:53</td>
+          <td>00:07:01</td>
+          <td>225.0</td>
+          <td>144</td>
+          <td>118.8</td>
+          <td>0.713</td>
+          <td>300.0</td>
+          <td>26.10</td>
+          <td>2'20"</td>
+        </tr>
+        <tr>
+          <td>17827594676</td>
+          <td><a href="https://www.strava.com/activities/17827594676" target="_blank">晚间游泳</a></td>
+          <td>2026-03-23 21:01:35</td>
+          <td>O</td>
+          <td>00:12:06</td>
+          <td>00:09:19</td>
+          <td>107.0</td>
+          <td>140</td>
+          <td>121.0</td>
+          <td>0.537</td>
+          <td>300.0</td>
+          <td>77.00</td>
+          <td>3'06"</td>
+        </tr>
+        <tr>
+          <td>17853228077</td>
+          <td><a href="https://www.strava.com/activities/17853228077" target="_blank">傍晚游泳</a></td>
+          <td>2026-03-25 20:25:27</td>
+          <td>O</td>
+          <td>00:52:52</td>
+          <td>00:38:30</td>
+          <td>505.0</td>
+          <td>165</td>
+          <td>127.7</td>
+          <td>0.433</td>
+          <td>1000.0</td>
+          <td>72.82</td>
+          <td>3'51"</td>
+        </tr>
+        <tr>
+          <td>17882820728</td>
+          <td><a href="https://www.strava.com/activities/17882820728" target="_blank">晨间游泳</a></td>
+          <td>2026-03-28 08:53:40</td>
+          <td>O</td>
+          <td>00:05:05</td>
+          <td>00:04:31</td>
+          <td>42.0</td>
+          <td>125</td>
+          <td>111.9</td>
+          <td>0.554</td>
+          <td>150.0</td>
+          <td>88.85</td>
+          <td>3'01"</td>
+        </tr>
+        <tr>
+          <td>17912465210</td>
+          <td><a href="https://www.strava.com/activities/17912465210" target="_blank">晚间游泳</a></td>
+          <td>2026-03-30 21:39:59</td>
+          <td>O</td>
+          <td>00:07:22</td>
+          <td>00:03:09</td>
+          <td>64.0</td>
+          <td>141</td>
+          <td>116.6</td>
+          <td>0.529</td>
+          <td>100.0</td>
+          <td>42.76</td>
+          <td>3'09"</td>
+        </tr>
+        <tr>
+          <td>17924930970</td>
+          <td><a href="https://www.strava.com/activities/17924930970" target="_blank">晚间游泳</a></td>
+          <td>2026-03-31 21:13:29</td>
+          <td>O</td>
+          <td>00:05:19</td>
+          <td>00:02:46</td>
+          <td>34.0</td>
+          <td>122</td>
+          <td>101.1</td>
+          <td>0.602</td>
+          <td>100.0</td>
+          <td>52.04</td>
+          <td>2'46"</td>
+        </tr>
+        <tr>
+          <td>17937241379</td>
+          <td><a href="https://www.strava.com/activities/17937241379" target="_blank">傍晚游泳</a></td>
+          <td>2026-04-01 20:14:47</td>
+          <td>O</td>
+          <td>00:17:37</td>
+          <td>00:16:38</td>
+          <td>205.0</td>
+          <td>140</td>
+          <td>132.6</td>
+          <td>0.501</td>
+          <td>500.0</td>
+          <td>94.42</td>
+          <td>3'20"</td>
+        </tr>
+      </tbody>
+    </table>
+    <button id="backToTop" title="回到頂部">▲</button>
+    <div id="rowTooltip"></div>
+    <script src="script.js"></script>
+</body>
