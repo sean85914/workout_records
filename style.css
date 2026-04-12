@@ -1,0 +1,91 @@
+/* 設定表格基本樣式 */
+#myTable {
+    width: 100%;
+    border-collapse: collapse; /* 讓邊框合併成單一線條 */
+    font-family: Arial, sans-serif;
+}
+
+/* 隱藏ID欄位 */
+#myTable th:nth-child(1) {
+    display: none;
+}
+
+#myTable td:nth-child(1) {
+    display: none;
+}
+
+/* 表頭顏色 (th) */
+#myTable thead th {
+    background-color: #2c3e50;      /* 深藍灰色 */
+    color: white;                   /* 文字轉白色 */
+    padding: 12px;
+    text-align: left;
+    border-bottom: 2px solid #ddd;
+    position: sticky;                  /* 固定 */
+    top: 0px;                          /* 距離頂部 0 像素時固定 */
+    z-index: 10;                       /* 確保表頭不會被資料行遮住 */
+}
+
+/* 偶數行顏色 (Even) */
+#myTable tbody tr:nth-child(even) {
+    background-color: #f2f2f2; /* 淺灰色 */
+}
+
+/* 奇數行顏色 (Odd) */
+#myTable tbody tr:nth-child(odd) {
+    background-color: #ffffff; /* 白色 */
+}
+
+/* 滑鼠懸停效果 (選配：增加互動感) */
+#myTable tbody tr:hover {
+    background-color: #e9ecef;
+    transition: background-color 0.2s ease;
+}
+
+/* 單元格 padding 與換行 */
+#myTable td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    white-space: pre-wrap;
+}
+
+/* 頁尾加總行樣式 */
+#myTable tfoot tr {
+    background-color: #e8f4fd; /* 淡淡的藍色區隔 */
+    font-weight: bold;
+}
+
+#backToTop {
+    display: none;        /* 預設隱藏 */
+    position: fixed;      /* 固定定位 */
+    bottom: 20px;         /* 距離底部 20px */
+    right: 30px;          /* 距離右側 30px */
+    z-index: 99;          /* 確保在所有元素上方 */
+    border: none;
+    outline: none;
+    background-color: #2c3e50; /* 使用你表頭的深藍色 */
+    color: white;
+    cursor: pointer;
+    padding: 15px;
+    border-radius: 50%;   /* 圓形按鈕 */
+    font-size: 18px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+}
+
+#backToTop:hover {
+    background-color: #34495e; /* 滑鼠移過時變深 */
+}
+
+#rowTooltip {
+    display: none;
+    position: fixed;
+    background: rgba(44, 62, 80, 0.9); /* 深藍透明感 */
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    pointer-events: none; /* 重要：滑鼠穿透，避免閃爍 */
+    z-index: 9999;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+    white-space: nowrap;
+}
