@@ -54,8 +54,8 @@ function filterTable() {
     const endDateInput = document.getElementById('endDate').value;
 
     // 將輸入轉為 Date 物件（若無輸入則設為極值）
-    const start = startDateInput ? new Date(startDateInput) : null;
-    const end = endDateInput ? new Date(endDateInput) : null;
+    const start = startDateInput ? new Date(startDateInput.replace(/-/g, '/')) : null;
+    const end = endDateInput ? new Date(endDateInput.replace(/-/g, '/')) : null;
     const tr = table.querySelector("tbody").getElementsByTagName("tr");
 
     // 從 index 1 開始（跳過 table header）
@@ -227,7 +227,6 @@ table.addEventListener('mousemove', (e) => {
 
     tooltip.style.left = x + 'px';
     tooltip.style.top = y + 'px';
-    console.log(e.clientX, e.clientY, tipWidth, tipHeight, x, y);
 });
 
 // 監聽 mouseout：離開表格或行時隱藏
