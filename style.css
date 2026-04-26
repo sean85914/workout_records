@@ -1,4 +1,8 @@
 /* 設定表格基本樣式 */
+#reset {
+    margin-left: 10px;
+}
+
 #myTable {
     width: 100%;
     border-collapse: collapse; /* 讓邊框合併成單一線條 */
@@ -88,4 +92,10 @@
     z-index: 9999;
     box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
     white-space: nowrap;
+}
+
+#openReportBtn {
+    font-family: Arial, sans-serif;
+    margin-top: 6px;
+    font-size: 12px;
 }

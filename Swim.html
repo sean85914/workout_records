@@ -5,14 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>游泳紀錄</title>
     <link rel="stylesheet" href="style.css">
+    <script type="importmap">
+    {
+      "imports": {
+        "d3": "https://cdn.jsdelivr.net/npm/d3@7/+esm"
+      }
+    }
+    </script>
 </head>
 <body>
     <div class="filter-container" style="margin-bottom: 20px;">
         <label for="startDate">起始日期：</label>
-        <input type="date" id="startDate" onchange="filterTable()">
+        <input type="date" id="startDate">
         <label for="endDate" style="margin-left: 20px;">結束日期：</label>
-        <input type="date" id="endDate" onchange="filterTable()">
-        <button onclick="resetFilter()" style="margin-left: 10px;">重設</button>
+        <input type="date" id="endDate">
+        <button id="reset">重設</button>
     </div>
     <a href="./index.html">回到首頁</a>
     <table border="1" class="dataframe" id="myTable">
@@ -1628,5 +1635,20 @@
     </table>
     <button id="backToTop" title="回到頂部">▲</button>
     <div id="rowTooltip"></div>
-    <script src="script.js"></script>
+    <button id="openReportBtn">生成報表</button>
+    <dialog id="reportDialog">
+        <form method="dialog">
+            <h3>選擇報表月份</h3>
+            <label>
+                年份與月份:
+                <input type="month" id="reportTargetMonth">
+            </label>
+            <div style="margin-top: 15px;">
+                <button type="button" id="cancelBtn">取消</button>
+                <button type="submit" id="confirmBtn">確定</button>
+            </div>
+        </form>
+    </dialog>
+    <div id="chart" class="chart-container"></div>
+    <script type="module" src="./script.js"></script>
 </body>
