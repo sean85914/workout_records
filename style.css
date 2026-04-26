@@ -94,8 +94,16 @@
     white-space: nowrap;
 }
 
-#openReportBtn {
-    font-family: Arial, sans-serif;
+.actions {
+    display: flex;
     margin-top: 6px;
+}
+
+.actions button {
+    font-family: Arial, sans-serif;
     font-size: 12px;
+}
+
+#exportCanvas {
+    display: none;
 }

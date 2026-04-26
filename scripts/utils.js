@@ -9,19 +9,15 @@ const should_accumulate = [
     "Distance (km)",
     "Elevation Gain",
 ];
-const type = window.location.pathname.split("/").pop().replace(".html", "");
 
 const TIME_PATTERN = /([0-9]{2}):([0-9]{2}):([0-9]{2})/;
-const table = document.getElementById("myTable");
-const headerArr = [...table.getElementsByTagName("th")].map(th => th.innerText);
-const dateColumnIndex = headerArr.indexOf("Date");
-const topBtn = document.getElementById("backToTop");
-const tooltip = document.getElementById('rowTooltip');
-const dialog = document.getElementById('reportDialog');
-const openBtn = document.getElementById('openReportBtn');
-const cancelBtn = document.getElementById('cancelBtn');
+// 顏色映射
+export const colorScale = d3.scaleOrdinal()
+    .domain(["WeightTraining", "Run", "Swim", "Ride"])
+    .range(["yellow", "red", "blue", "green"]);
 
-class Time {
+
+export class Time {
     constructor(h, m, s) {
         this.h = parseInt(h) || 0;
         this.m = parseInt(m) || 0;
@@ -55,15 +51,37 @@ class Time {
     }
 }
 
-function filterTable() {
+function isTime(input) {
+    return TIME_PATTERN.test(input);
+}
+
+function parseTime(input) {
+    const match = input.match(TIME_PATTERN);
+    return {
+        h: parseInt(match[1]),
+        m: parseInt(match[2]),
+        s: parseInt(match[3]),
+    }
+}
+
+export function resetFilter() {
+    document.getElementById('startDate').value = '';
+    document.getElementById('endDate').value = '';
+    filterTable();
+}
+
+export function filterTable() {
     // 獲取選擇的日期數值
     const startDateInput = document.getElementById('startDate').value;
     const endDateInput = document.getElementById('endDate').value;
+    const table = document.getElementById("myTable");
+    const headerArr = [...table.getElementsByTagName("th")].map(th => th.innerText);
+    const tr = table.querySelector("tbody").getElementsByTagName("tr");
+    const dateColumnIndex = headerArr.indexOf("Date");
 
-    // 將輸入轉為 Date 物件（若無輸入則設為極值）
+    // 將輸入轉為 Date 物件（若無輸入則設為極值)
     const start = startDateInput ? new Date(startDateInput.replace(/-/g, '/')) : null;
     const end = endDateInput ? new Date(endDateInput.replace(/-/g, '/')) : null;
-    const tr = table.querySelector("tbody").getElementsByTagName("tr");
 
     // 從 index 1 開始（跳過 table header）
     for (let i = 0; i < tr.length; i++) {
@@ -92,24 +110,10 @@ function filterTable() {
     accumulateTable();
 }
 
-document.getElementById("startDate").addEventListener("change", filterTable);
-document.getElementById("endDate").addEventListener("change", e => {
-    const start = document.getElementById("startDate").value;
-    const end = document.getElementById("endDate").value;
-    if (!start || !end)
-        return;
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    if (endDate < startDate) {
-        // 如果end比start還前面，就設定end與start同一天
-        document.getElementById("endDate").value = start;
-    }
-    filterTable();
-});
-document.getElementById("reset").addEventListener("click", resetFilter);
-
-function accumulateTable() {
+export function accumulateTable() {
+    const table = document.getElementById("myTable");
     const tr = table.querySelector("tbody").getElementsByTagName("tr");
+    const headerArr = [...table.getElementsByTagName("th")].map(th => th.innerText);
     const acc = Array(headerArr.length).fill(null);
     for (let i = 0; i < tr.length; ++i) {
         if (tr[i].style.display === 'none') continue;
@@ -167,147 +171,60 @@ function accumulateTable() {
     table.appendChild(tfoot);
 }
 
-// 建立所有紀錄的起始/終止時間
-const rows = [];
-const tr = table.querySelector("tbody").querySelectorAll("tr");
-const dateIndex = headerArr.indexOf("Date");
-const durationIndex = headerArr.indexOf("Elapsed Time");
-tr.forEach(row => {
-    const tds = row.querySelectorAll("td");
-    const start = new Date(tds[dateIndex].innerText);
-    const duration = Time.fromString(tds[durationIndex].innerText);
-    let end = new Date(start);
-    end.setHours(
-        end.getHours() + duration.h,
-        end.getMinutes() + duration.m,
-        end.getSeconds() + duration.s
-    );
-    rows.push({
-        start: start,
-        end: end,
-        type: type
-    });
-})
-
-accumulateTable();  // 先加總總表
-
-function resetFilter() {
-    document.getElementById('startDate').value = '';
-    document.getElementById('endDate').value = '';
-    filterTable();
+export function onOpenDialog() {
+    const reportTargetMonth = document.getElementById("reportTargetMonth");
+    if (!reportTargetMonth.value) {
+        const today = new Date();
+        reportTargetMonth.value = `${today.getFullYear()}-${today.getMonth() + 1}`;
+    }
+    document.getElementById("reportDialog").showModal();
 }
 
-function isTime(input) {
-    return TIME_PATTERN.test(input);
+export function onCloseDialog() {
+    document.getElementById("reportDialog").close("confirm");
 }
 
-function parseTime(input) {
-    const match = input.match(TIME_PATTERN);
-    return {
-        h: parseInt(match[1]),
-        m: parseInt(match[2]),
-        s: parseInt(match[3]),
-    }
-}
-
-window.onscroll = function() {
-    if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
-        topBtn.style.display = "block";
-    } else {
-        topBtn.style.display = "none";
-    }
-};
-
-// 點擊事件：平滑捲動到頂部
-topBtn.onclick = function() {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth' // 平滑捲動效果
-    });
-};
-
-// 滑鼠事件
-// 監聽 mouseover：判斷是否進入資料行
-table.addEventListener('mouseover', (e) => {
-    const tr = e.target.closest('tbody tr'); // 僅針對 tbody 內的 tr
-    if (tr) {
-        const allRows = Array.from(tr.parentElement.rows);
-        const visibleIndex = allRows.
-            filter(row => row.style.display !== 'none')
-            .indexOf(tr) + 1;
-        if (visibleIndex > 0) {
-            tooltip.innerHTML = `第 ${visibleIndex} 個活動`;
-            tooltip.style.display = 'block';
-        }
-    }
-});
-
-// 監聽 mousemove：讓 Tooltip 跟隨滑鼠
-table.addEventListener('mousemove', (e) => {
-    // 1. 如果沒顯示，就不需要更新
-    if (tooltip.style.display !== 'block') {
-        return;
-    }
-
-    const offset = 15;
-    let x = e.clientX + offset;
-    let y = e.clientY + offset;
-
-    // 2. 取得當前 Tooltip 的寬高
-    const tipWidth = tooltip.offsetWidth;
-    const tipHeight = tooltip.offsetHeight;
-
-    // 3. 邊界判斷
-    if (x + tipWidth > window.innerWidth) {
-        x = e.clientX - tipWidth - offset;
-    }
-
-    if (y + tipHeight > window.innerHeight) {
-        y = e.clientY - tipHeight - offset;
-    }
-
-    // 4. 強制確保不會變成負數 (保險機制)
-    x = Math.max(5, x);
-    y = Math.max(5, y);
-
-    tooltip.style.left = x + 'px';
-    tooltip.style.top = y + 'px';
-});
-
-// 監聽 mouseout：離開表格或行時隱藏
-table.addEventListener('mouseout', (e) => {
-    // 檢查是否真的離開了 tr
-    if (!e.relatedTarget || !e.relatedTarget.closest('tbody tr')) {
-        tooltip.style.display = 'none';
-    }
-});
-
-openBtn.addEventListener("click", e => {
-    const today = new Date();
-    document.getElementById("reportTargetMonth").value = `${today.getFullYear()}-${today.getMonth() + 1}`;
-    dialog.showModal();
-})
-
-cancelBtn.addEventListener('click', () => {
-    dialog.close();
-});
-
-dialog.addEventListener('close', () => {
-    if (dialog.returnValue === 'confirm') { // 可以在這裡判斷是否點擊確定
+export function onDialogClose(rows) {
+    if (document.getElementById("reportDialog").returnValue === 'confirm') { // 判斷是否點擊確定
         const selectedValue = document.getElementById('reportTargetMonth').value;
         // selectedValue 格式為 "YYYY-MM" (例如 "2025-02")
         const [year, month] = selectedValue.split('-').map(Number);
         if (year && month) {
-            generateChart(year, month - 1); // 月份要 -1
+            generateChart(year, month - 1, rows); // 月份要 -1
         }
     }
-});
+}
 
-document.getElementById('confirmBtn').addEventListener('click', (e) => {
-    dialog.close('confirm');
-});
+export function parseTableToRows(type, table) {
+    // 建立所有紀錄的起始/終止時間
+    const rows = [];
+    const tr = table.querySelector("tbody").querySelectorAll("tr");
+    const headerArr = [...table.getElementsByTagName("th")].map(th => th.innerText);
+    const dateIndex = headerArr.indexOf("Date");
+    const durationIndex = headerArr.indexOf("Elapsed Time");
+    tr.forEach(row => {
+        const tds = row.querySelectorAll("td");
+        const start = new Date(tds[dateIndex].innerText);
+        const duration = Time.fromString(tds[durationIndex].innerText);
+        let end = new Date(start);
+        end.setHours(
+            end.getHours() + duration.h,
+            end.getMinutes() + duration.m,
+            end.getSeconds() + duration.s
+        );
+        rows.push({
+            start: start,
+            end: end,
+            type: type
+        });
+    })
+    return rows;
+}
 
-function generateChart(year, monthIndex) {
+export function generateChart(year, monthIndex, rows) {
+    if ( !document.getElementById("chart") ) {
+        return;
+    }
     // A. 清除舊圖表
     d3.select("#chart").selectAll("*").remove();
 
@@ -344,11 +261,6 @@ function generateChart(year, monthIndex) {
         .domain([new Date(year, monthIndex, 1, 0, 0), new Date(year, monthIndex, 1, 23, 59, 59)])
         .range([0, height]);
 
-    // 顏色映射
-    const colorScale = d3.scaleOrdinal()
-        .domain(["WeightTraining", "Run", "Swim", "Ride"])
-        .range(["yellow", "red", "blue", "green"]);
-
     // 4. 繪製背景格線 (Grid)
     svg.append("g")
         .attr("class", "grid")
@@ -356,7 +268,11 @@ function generateChart(year, monthIndex) {
             .ticks(d3.timeHour.every(3))
             .tickSize(-width)
             .tickFormat("")
-        );
+        )
+        .selectAll("line") // 選取產生的線
+        .attr("stroke", "#ccc") // 下載要看得到，必須用 .attr 或 .style
+        .attr("stroke-dasharray", "4,4") // 這裡設定虛線
+        .attr("stroke-opacity", 0.7);
 
     // 5. 繪製運動色塊
     svg.selectAll(".workout-bar")
@@ -411,4 +327,48 @@ function generateChart(year, monthIndex) {
         behavior: 'smooth', // 平滑捲動，不會突兀地跳過去
         block: 'start'      // 讓元素頂端對齊視窗頂端
     });
+    if (document.getElementById("downloadBtn")) {
+        document.getElementById("downloadBtn").disabled = false;
+    }
+}
+
+export function onDownloadReport() {
+    const svgElement = document.querySelector("#chart svg");
+    const canvas = document.getElementById("exportCanvas");
+
+    // 1. 取得 SVG 原始碼與尺寸
+    const serializer = new XMLSerializer();
+    const svgString = serializer.serializeToString(svgElement);
+    const svgBlob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(svgBlob);
+
+    const bbox = svgElement.getBoundingClientRect();
+    canvas.width = bbox.width;
+    canvas.height = bbox.height;
+
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+
+    img.onload = () => {
+        // 2. 繪製背景顏色 (選填，如果沒畫背景，透明部分在某些檢視器會變黑色)
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // 3. 將圖片畫到 Canvas
+        ctx.drawImage(img, 0, 0);
+
+        // 4. 轉換為 PNG 並下載
+        const pngUrl = canvas.toDataURL("image/png");
+        const downloadLink = document.createElement("a");
+        downloadLink.href = pngUrl;
+        const selectedValue = document.getElementById('reportTargetMonth').value;
+        downloadLink.download = `${document.title}_${selectedValue}.png`;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+
+        // 釋放記憶體
+        URL.revokeObjectURL(url);
+    };
+    img.src = url;
 }

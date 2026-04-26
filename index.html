@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>運動記錄</title>
+    <script type="importmap">
+    {
+      "imports": {
+        "d3": "https://cdn.jsdelivr.net/npm/d3@7/+esm"
+      }
+    }
+    </script>
 </head>
 <body>
     <ul>
@@ -20,5 +27,25 @@
             <a href="WeightTraining.html">重量訓練</a>
         </li>
     </ul>
+    <div class="actions">
+        <button id="openReportBtn">生成報表</button>
+        <button id="downloadBtn" disabled="true">下載報表</button>
+    </div>
+    <dialog id="reportDialog">
+        <form method="dialog">
+            <h3>選擇報表月份</h3>
+            <label>
+                年份與月份:
+                <input type="month" id="reportTargetMonth">
+            </label>
+            <div style="margin-top: 15px;">
+                <button type="button" id="cancelBtn">取消</button>
+                <button type="submit" id="confirmBtn">確定</button>
+            </div>
+        </form>
+    </dialog>
+    <div id="chart" class="chart-container"></div>
+    <canvas id="exportCanvas"></canvas>
+    <script type="module" src="./scripts/index.js"></script>
 </body>
 </html>

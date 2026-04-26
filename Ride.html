@@ -1566,7 +1566,10 @@
     </table>
     <button id="backToTop" title="回到頂部">▲</button>
     <div id="rowTooltip"></div>
-    <button id="openReportBtn">生成報表</button>
+    <div class="actions">
+        <button id="openReportBtn">生成報表</button>
+        <button id="downloadBtn">下載報表</button>
+    </div>
     <dialog id="reportDialog">
         <form method="dialog">
             <h3>選擇報表月份</h3>
@@ -1581,5 +1584,6 @@
         </form>
     </dialog>
     <div id="chart" class="chart-container"></div>
-    <script type="module" src="./script.js"></script>
+    <canvas id="exportCanvas"></canvas>
+    <script type="module" src="./scripts/script.js"></script>
 </body>
