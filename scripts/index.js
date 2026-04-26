@@ -10,7 +10,7 @@ const downloadBtn = document.getElementById("downloadBtn");
 const rows = [];
 const types = ["Swim", "Ride", "Run", "WeightTraining"];
 for (const type of types) {
-    const res = await fetch(`/${type}.html`);
+    const res = await fetch(`${type}.html`);
     const text = await res.text();
 
     const parser = new DOMParser();
