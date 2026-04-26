@@ -9,7 +9,7 @@ const should_accumulate = [
     "Distance (km)",
     "Elevation Gain",
 ];
-const type = window.location.pathname.split("/")[1].replace(".html", "");
+const type = window.location.pathname.split("/").pop().replace(".html", "");
 
 const TIME_PATTERN = /([0-9]{2}):([0-9]{2}):([0-9]{2})/;
 const table = document.getElementById("myTable");
