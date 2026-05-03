@@ -112,6 +112,20 @@ function toggle() {
   update();
 }
 
+function downloadData() {
+  const data = load();
+
+  const blob = new Blob([JSON.stringify(data, null, 4)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `timer-${todayStr()}.json`;
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+
 // 每秒更新畫面（但不依賴它計時）
 setInterval(update, 1000);
 update();
