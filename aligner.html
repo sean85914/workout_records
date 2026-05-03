@@ -22,9 +22,16 @@
   <p>今日配戴時間</p>
   <h1 id="time">00:00:00</h1>
   <p id="currentState">目前狀態: 未配戴</p>
+  <p id="lastStart">上次配戴時間</p>
+  <button onclick="edit()" id="edit">✏️</button>
 </div>
 <button onclick="toggle()">開始/關閉</button>
 <button onclick="downloadData()">下載歷史數據</button>
+<dialog id="editLastStart">
+  <input type="datetime-local" id="selectTime">
+  <button id="confirm">確認</button>
+  <button id="cancel">取消</button>
+</dialog>
 
 <script>
 const KEY = "alignerData";
@@ -43,18 +50,43 @@ function todayStr() {
   return new Date().toISOString().slice(0, 10);
 }
 
+function startOfToday() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
+}
+
+function formatDate(date = new Date()) {
+  const pad = (n) => n.toString().padStart(2, '0');
+
+  return `${date.getFullYear()}-` +
+         `${pad(date.getMonth() + 1)}-` +
+         `${pad(date.getDate())} ` +
+         `${pad(date.getHours())}:` +
+         `${pad(date.getMinutes())}:` +
+         `${pad(date.getSeconds())}`;
+}
+
 function load() {
   let data = JSON.parse(localStorage.getItem(KEY)) || defaultState;
 
-  // 如果是新的一天 → reset
+  // 如果是新的一天則重置
   if (data.today && data.today.date && data.today.date !== todayStr()) {
-    data[data.today.date] = data.today;
     const state = data.today.running;
+    // 如果還在配戴，更新昨日總配戴時間
+    if (state && data.today.lastStart) {
+      const midnight = startOfToday();
+      data.today.total += midnight - data.today.lastStart;
+    }
+    // 儲存昨日資訊
+    data[data.today.date] = data.today;
+
+    // 更新今日資訊
     data.today = {
       date: todayStr(),  // 今日日期
       total: 0,  // 今日佩戴時間
       running: state,  // 是否正在配戴
-      lastStart: null  // 上次開始配戴時間
+      lastStart: state ? startOfToday() : null  // 上次開始配戴時間
     };
   }
 
@@ -88,7 +120,6 @@ function update() {
   let data = load();
   let t = getCurrentTotal(data);
   document.getElementById("time").innerText = format(t);
-  document.getElementById("currentState").innerText = `目前狀態: ${data.today.running ? "配戴中" : "未配戴"}`;
 }
 
 // 更新狀態
@@ -114,6 +145,9 @@ function toggle() {
 
 function downloadData() {
   const data = load();
+  if (data.today.running && data.today.lastStart) {
+    data.today.total += Date.now() - data.today.lastStart;
+  }
 
   const blob = new Blob([JSON.stringify(data, null, 4)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -126,9 +160,52 @@ function downloadData() {
   URL.revokeObjectURL(url);
 }
 
+function edit() {
+  const data = load();
+
+  // 如果有 lastStart，填入 input
+  if (data.today.lastStart) {
+    const d = new Date(data.today.lastStart);
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    document.getElementById("selectTime").value = d.toISOString().slice(0, 16);  // 到分鐘
+  }
+
+  document.getElementById("editLastStart").showModal();
+}
+
+document.getElementById("cancel").addEventListener("click", () => {
+  document.getElementById("editLastStart").close();
+});
+
+document.getElementById("confirm").addEventListener("click", () => {
+  const data = load();
+
+  const newTime = new Date(document.getElementById("selectTime").value).getTime();
+
+  if (!isNaN(newTime)) {
+    data.today.lastStart = newTime;
+
+    // 如果正在 running，要同步修正 total（避免跳動）
+    if (data.today.running) {
+      data.today.lastStart = newTime;
+    }
+
+    localStorage.setItem(KEY, JSON.stringify(data));
+  }
+
+  document.getElementById("editLastStart").close();
+  update(); // refresh UI
+});
+
 // 每秒更新畫面（但不依賴它計時）
 setInterval(update, 1000);
 update();
+const data = load();
+document.getElementById("currentState").innerText = `目前狀態: ${data.today.running ? "配戴中" : "未配戴"}`;
+if (data.today.lastStart) {
+  const date = new Date(data.today.lastStart);
+  document.getElementById("lastStart").innerText = `上次配戴時間: ${formatDate(date)}`;
+}
 </script>
 
 </body>
