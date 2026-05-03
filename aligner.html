@@ -88,6 +88,7 @@ function update() {
   let data = load();
   let t = getCurrentTotal(data);
   document.getElementById("time").innerText = format(t);
+  document.getElementById("currentState").innerText = `目前狀態: ${data.today.running ? "配戴中" : "未配戴"}`;
 }
 
 // 更新狀態
@@ -106,13 +107,10 @@ function toggle() {
     data.today.lastStart = Date.now();
     document.getElementById("currentState").innerText = `目前狀態: 配戴中`;
   }
-  console.log(data.today);
 
   save(data);
   update();
 }
-
-console.log(load());
 
 // 每秒更新畫面（但不依賴它計時）
 setInterval(update, 1000);
