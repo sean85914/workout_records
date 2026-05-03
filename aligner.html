@@ -5,17 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>牙套計時器</title>
   <link rel="icon" href="https://www.invisalign.com/favicon.ico" type="image/x-icon">
+  <style>
+    button {
+      font-size: 16px;
+    }
+    .container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+  </style>
 </head>
 <body>
 
-<div style="display: flex; align-items: center; gap: 10px;">
+<div class="container">
   <p>今日配戴時間</p>
   <h1 id="time">00:00:00</h1>
+  <p id="currentState">目前狀態: 未配戴</p>
 </div>
-<button onclick="toggle()" style="font-size: 16px">開始/關閉</button>
+<button onclick="toggle()">開始/關閉</button>
+<button onclick="downloadData()">下載歷史數據</button>
 
 <script>
-const KEY = "timerData";
+const KEY = "alignerData";
+const defaultState = {
+  "today": {
+    date: todayStr(),
+    total: 0,
+    running: false,
+    lastStart: null,
+  }
+};
 
 
 function todayStr() {
@@ -24,15 +44,17 @@ function todayStr() {
 }
 
 function load() {
-  let data = JSON.parse(localStorage.getItem(KEY) || "{}");
+  let data = JSON.parse(localStorage.getItem(KEY)) || defaultState;
 
   // 如果是新的一天 → reset
-  if (data.date !== todayStr()) {
-    data = {
-      date: todayStr(),
-      total: 0,
-      running: false,
-      lastStart: null
+  if (data.today && data.today.date && data.today.date !== todayStr()) {
+    data[data.today.date] = data.today;
+    const state = data.today.running;
+    data.today = {
+      date: todayStr(),  // 今日日期
+      total: 0,  // 今日佩戴時間
+      running: state,  // 是否正在配戴
+      lastStart: null  // 上次開始配戴時間
     };
   }
 
@@ -45,8 +67,9 @@ function save(data) {
 }
 
 function getCurrentTotal(data) {
-  if (!data.running) return data.total;
-  return data.total + (Date.now() - data.lastStart);
+  if (!data || !data.today) return "0";
+  if (!data.today.running) return data.today.total;
+  return data.today.total + (Date.now() - data.today.lastStart);
 }
 
 // ms轉為HH:MM:SS
@@ -71,20 +94,25 @@ function update() {
 function toggle() {
   let data = load();
 
-  if (data.running) {
+  if (data.today.running) {
     // stop
-    data.total = getCurrentTotal(data);
-    data.running = false;
-    data.lastStart = null;
+    data.today.total = getCurrentTotal(data);
+    data.today.running = false;
+    data.today.lastStart = null;
+    document.getElementById("currentState").innerText = `目前狀態: 未配戴`;
   } else {
     // start
-    data.running = true;
-    data.lastStart = Date.now();
+    data.today.running = true;
+    data.today.lastStart = Date.now();
+    document.getElementById("currentState").innerText = `目前狀態: 配戴中`;
   }
+  console.log(data.today);
 
   save(data);
   update();
 }
+
+console.log(load());
 
 // 每秒更新畫面（但不依賴它計時）
 setInterval(update, 1000);
