@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>牙套計時器</title>
+  <link rel="icon" href="https://www.invisalign.com/favicon.ico" type="image/x-icon">
+</head>
+<body>
+
+<div style="display: flex; align-items: center; gap: 10px;">
+  <p>今日配戴時間</p>
+  <h1 id="time">00:00:00</h1>
+</div>
+<button onclick="toggle()" style="font-size: 16px">開始/關閉</button>
+
+<script>
+const KEY = "timerData";
+
+
+function todayStr() {
+  // YYYY-mm-dd
+  return new Date().toISOString().slice(0, 10);
+}
+
+function load() {
+  let data = JSON.parse(localStorage.getItem(KEY) || "{}");
+
+  // 如果是新的一天 → reset
+  if (data.date !== todayStr()) {
+    data = {
+      date: todayStr(),
+      total: 0,
+      running: false,
+      lastStart: null
+    };
+  }
+
+  return data;
+}
+
+// 將資料存進localStorage
+function save(data) {
+  localStorage.setItem(KEY, JSON.stringify(data));
+}
+
+function getCurrentTotal(data) {
+  if (!data.running) return data.total;
+  return data.total + (Date.now() - data.lastStart);
+}
+
+// ms轉為HH:MM:SS
+function format(ms) {
+  let sec = Math.floor(ms / 1000) % 60;
+  let min = Math.floor(ms / 60000) % 60;
+  let hr  = Math.floor(ms / 3600000);
+
+  return `${hr.toString().padStart(2,"0")}:` +
+         `${min.toString().padStart(2,"0")}:` +
+         `${sec.toString().padStart(2,"0")}`;
+}
+
+// 更新頁面
+function update() {
+  let data = load();
+  let t = getCurrentTotal(data);
+  document.getElementById("time").innerText = format(t);
+}
+
+// 更新狀態
+function toggle() {
+  let data = load();
+
+  if (data.running) {
+    // stop
+    data.total = getCurrentTotal(data);
+    data.running = false;
+    data.lastStart = null;
+  } else {
+    // start
+    data.running = true;
+    data.lastStart = Date.now();
+  }
+
+  save(data);
+  update();
+}
+
+// 每秒更新畫面（但不依賴它計時）
+setInterval(update, 1000);
+update();
+</script>
+
+</body>
+</html>
