@@ -67,7 +67,10 @@ const defaultState = {
 
 function todayStr() {
   // YYYY-mm-dd
-  return new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const offset = now.getTimezoneOffset() * 60000;  // 分鐘轉毫秒
+  const localISOTime = new Date(now.getTime() - offset).toISOString().slice(0, 10);
+  return localISOTime;
 }
 
 function startOfToday() {
