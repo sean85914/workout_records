@@ -108,6 +108,7 @@ function load() {
     if (state && data.today.lastStart) {
       const midnight = startOfToday();
       data.today.total += midnight - data.today.lastStart;
+      data.today.history.end.push(midnight);
     }
     // 儲存昨日資訊
     data[data.today.date] = data.today;
@@ -117,8 +118,15 @@ function load() {
       date: todayStr(),  // 今日日期
       total: 0,  // 今日配戴時間
       running: state,  // 是否正在配戴
-      lastStart: state ? startOfToday() : null  // 上次開始配戴時間
+      lastStart: state ? startOfToday() : null,  // 上次開始配戴時間
+      history: {
+        start: [],
+        end: [],
+      },
     };
+    if (state) {
+      data.today.history.start.push(startOfToday());
+    }
   }
 
   return data;
@@ -164,16 +172,25 @@ function update() {
 function toggle() {
   let data = load();
 
+  if(!data.today.history) {
+    data.today.history = {
+      start: [],
+      end: [],
+    };
+  }
+
   if (data.today.running) {
     // stop
     data.today.total = getCurrentTotal(data);
     data.today.running = false;
     data.today.lastStart = null;
+    data.today.history.end.push(Date.now());
     document.getElementById("currentState").innerText = "未配戴";
   } else {
     // start
     data.today.running = true;
     data.today.lastStart = Date.now();
+    data.today.history.start.push(data.today.lastStart);
     document.getElementById("currentState").innerText = "配戴中";
     document.getElementById("lastStart").innerText = `${formatDate(data.today.lastStart)}`;
   }
@@ -218,6 +235,7 @@ document.getElementById("cancel").addEventListener("click", () => {
 
 document.getElementById("confirm").addEventListener("click", () => {
   const data = load();
+  const oldTime = data.today.lastStart;
 
   const newTime = new Date(document.getElementById("selectTime").value).getTime();
 
@@ -234,6 +252,8 @@ document.getElementById("confirm").addEventListener("click", () => {
 
   document.getElementById("editLastStart").close();
   document.getElementById("lastStart").innerText = formatDate(newTime);
+  const idx = data.today.history.start.indexOf(oldTime);
+  data.today.history.start[idx] = newTime;
   update(); // refresh UI
 });
 
