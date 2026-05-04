@@ -100,6 +100,12 @@ function formatTime(ms) {
 
 function load() {
   let data = JSON.parse(localStorage.getItem(KEY)) || defaultState;
+  if (data.today && !data.today.history) {
+    data.today.history = {
+      start: [],
+      end: [],
+    };
+  }
 
   // 如果是新的一天則重置
   if (data.today && data.today.date && data.today.date !== todayStr()) {
