@@ -10,9 +10,22 @@
       font-size: 16px;
     }
     .container {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(2, auto);
+      gap: 0px; /* 元素間距 */
       align-items: center;
-      gap: 10px;
+      justify-items: center;
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    .lastStartTime {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 4px;
     }
   </style>
 </head>
@@ -20,12 +33,16 @@
 
 <div class="container">
   <p>今日配戴時間</p>
+  <p>目前狀態</p>
+  <p>上次配戴時間</p>
   <h1 id="time">00:00:00</h1>
-  <p id="currentState">目前狀態: 未配戴</p>
-  <p id="lastStart">上次配戴時間</p>
-  <button onclick="edit()" id="edit">✏️</button>
+  <p id="currentState">未配戴</p>
+  <div class="lastStartTime">
+    <p id="lastStart"></p>
+    <button onclick="edit()" id="edit">✏️</button>
+  </div>
 </div>
-<button onclick="toggle()">開始/關閉</button>
+<button id="toggleBtn" onclick="toggle()">開始配戴</button>
 <button onclick="downloadData()">下載歷史數據</button>
 <dialog id="editLastStart">
   <input type="datetime-local" id="selectTime">
@@ -84,7 +101,7 @@ function load() {
     // 更新今日資訊
     data.today = {
       date: todayStr(),  // 今日日期
-      total: 0,  // 今日佩戴時間
+      total: 0,  // 今日配戴時間
       running: state,  // 是否正在配戴
       lastStart: state ? startOfToday() : null  // 上次開始配戴時間
     };
@@ -120,6 +137,13 @@ function update() {
   let data = load();
   let t = getCurrentTotal(data);
   document.getElementById("time").innerText = format(t);
+  if (data.today) {
+    if (data.today.running) {
+      document.getElementById("toggleBtn").innerText = "結束配戴";
+    } else {
+      document.getElementById("toggleBtn").innerText = "開始配戴";
+    }
+  }
 }
 
 // 更新狀態
@@ -131,12 +155,13 @@ function toggle() {
     data.today.total = getCurrentTotal(data);
     data.today.running = false;
     data.today.lastStart = null;
-    document.getElementById("currentState").innerText = `目前狀態: 未配戴`;
+    document.getElementById("currentState").innerText = "未配戴";
   } else {
     // start
     data.today.running = true;
     data.today.lastStart = Date.now();
-    document.getElementById("currentState").innerText = `目前狀態: 配戴中`;
+    document.getElementById("currentState").innerText = "配戴中";
+    document.getElementById("lastStart").innerText = `${formatDate(data.today.lastStart)}`;
   }
 
   save(data);
@@ -201,10 +226,10 @@ document.getElementById("confirm").addEventListener("click", () => {
 setInterval(update, 1000);
 update();
 const data = load();
-document.getElementById("currentState").innerText = `目前狀態: ${data.today.running ? "配戴中" : "未配戴"}`;
+document.getElementById("currentState").innerText = `${data.today.running ? "配戴中" : "未配戴"}`;
 if (data.today.lastStart) {
   const date = new Date(data.today.lastStart);
-  document.getElementById("lastStart").innerText = `上次配戴時間: ${formatDate(date)}`;
+  document.getElementById("lastStart").innerText = `${formatDate(date)}`;
 }
 </script>
 
