@@ -44,6 +44,9 @@
 </div>
 <button id="toggleBtn" onclick="toggle()">開始配戴</button>
 <button onclick="downloadData()">下載歷史數據</button>
+<h2>今日配戴目標時數:
+<span id="targetTime">16:00</span>
+</h2>
 <dialog id="editLastStart">
   <input type="datetime-local" id="selectTime">
   <button id="confirm">確認</button>
@@ -74,14 +77,22 @@ function startOfToday() {
 }
 
 function formatDate(date = new Date()) {
+  // YYYY-mm-DD HH:MM:SS
   const pad = (n) => n.toString().padStart(2, '0');
+  const date_ = date instanceof Date ? date : new Date(date);
 
-  return `${date.getFullYear()}-` +
-         `${pad(date.getMonth() + 1)}-` +
-         `${pad(date.getDate())} ` +
-         `${pad(date.getHours())}:` +
-         `${pad(date.getMinutes())}:` +
-         `${pad(date.getSeconds())}`;
+  return `${date_.getFullYear()}-` +
+         `${pad(date_.getMonth() + 1)}-` +
+         `${pad(date_.getDate())} ` +
+         `${pad(date_.getHours())}:` +
+         `${pad(date_.getMinutes())}:` +
+         `${pad(date_.getSeconds())}`;
+}
+
+function formatTime(ms) {
+  // HH:MM
+  const result = new Date(ms).toISOString().substring(11, 16);
+
 }
 
 function load() {
