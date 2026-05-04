@@ -233,6 +233,7 @@ document.getElementById("confirm").addEventListener("click", () => {
   }
 
   document.getElementById("editLastStart").close();
+  document.getElementById("lastStart").innerText = formatDate(newTime);
   update(); // refresh UI
 });
 
