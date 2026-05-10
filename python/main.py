@@ -32,4 +32,7 @@ for data in datas:
 for _type in ['WeightTraining', 'Swim', 'Ride', 'Run']:
     os.rename(f'{_type}.html', f'../{_type}.html')
 
+for file in glob('*.pkl'):
+    os.rename(file, f'data/{file}')
+
 print([len(data['datas']) for data in datas])
