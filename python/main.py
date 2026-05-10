@@ -4,7 +4,7 @@ from zoneinfo import ZoneInfo
 from datetime import datetime
 from crawl_data import connect, collect_activities, save_data, load_data, to_html
 
-client = connect(
+client, _ = connect(
     client_id=os.environ["STRAVA_CLIENT_ID"],
     client_secret=os.environ["STRAVA_CLIENT_SECRET"],
     refresh_token=os.environ["STRAVA_REFRESH_TOKEN"],
