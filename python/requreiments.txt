@@ -1,0 +1,2 @@
+stravalib>=v1.6
+pandas>=2.1.4
