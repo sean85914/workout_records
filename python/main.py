@@ -15,9 +15,9 @@ for pkl in glob('data/*.pkl'):
     datas.append(load_data(pkl))
 print([len(data['datas']) for data in datas])
 
-y = datas[0]['meta']['data'].year
-m = datas[0]['meta']['data'].month
-d = datas[0]['meta']['data'].day
+y = datas[0]['meta']['date'].year
+m = datas[0]['meta']['date'].month
+d = datas[0]['meta']['date'].day
 
 datas = collect_activities(
     client,
