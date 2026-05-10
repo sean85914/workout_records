@@ -1,3 +1,8 @@
+name: Update workout records
+
+on:
+  workflow_dispatch:
+
 jobs:
   update:
     runs-on: ubuntu-latest
