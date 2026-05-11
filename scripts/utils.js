@@ -221,6 +221,34 @@ export function parseTableToRows(type, table) {
     return rows;
 }
 
+export function parseDashboardData(type, table, days = 7) {
+    const headers = [...table.getElementsByTagName("th")].map(th => th.innerText);
+    const dateIdx = headers.indexOf("Date");
+    const elapsedIdx = headers.indexOf("Elapsed Time");
+    const distIdx = ["Distance", "Distance (km)"].reduce(
+        (found, name) => found !== -1 ? found : headers.indexOf(name), -1
+    );
+
+    const ago = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    const recent = [...table.querySelector("tbody").querySelectorAll("tr")]
+        .filter(row => new Date(row.querySelectorAll("td")[dateIdx]?.innerText) >= ago);
+
+    let totalSeconds = 0;
+    let totalDist = 0;
+    recent.forEach(row => {
+        const tds = row.querySelectorAll("td");
+        totalSeconds += Time.fromString(tds[elapsedIdx].innerText).toSeconds();
+        if (distIdx !== -1) totalDist += parseFloat(tds[distIdx].innerText) || 0;
+    });
+
+    return {
+        count: recent.length,
+        totalTime: Time.fromSeconds(totalSeconds),
+        totalDist: distIdx !== -1 ? totalDist : null,
+        distUnit: type === "Swim" ? "m" : type === "WeightTraining" ? null : "km",
+    };
+}
+
 export function generateChart(year, monthIndex, rows) {
     if ( !document.getElementById("chart") ) {
         return;
