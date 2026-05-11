@@ -35,3 +35,8 @@ jobs:
           git add -A
           git diff --cached --quiet || git commit -m "auto: update workout records"
           git push
+      - name: Trigger deploy
+        run: |
+          gh workflow run static.yml
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
