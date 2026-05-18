@@ -269,3 +269,17 @@ def to_html(data):
     with open(f'{work_type}.html', 'w') as f:
         f.write(html)
     return f.name
+
+
+def fix_swim_distance(swim_datas, target_id, correct_distance):
+    if swim_datas['meta']['type'] != 'swim':
+        raise ValueError('Input data is not with type swim')
+    row = next(row for row in swim_datas['datas'] if row[0] == target_id)
+    from pint import UnitRegistry
+    unit_reg = UnitRegistry()
+    distance_idx = SWIM_COLUMNS.index('Distance')
+    moving_time_idx = SWIM_COLUMNS.index('Moving Time')
+    mean_speed_idx = SWIM_COLUMNS.index('Mean Speed')
+    row[distance_idx] = correct_distance * unit_reg.meter
+    duration = row[moving_time_idx].total_seconds()
+    row[mean_speed_idx] = round(correct_distance / duration, 3) * (unit_reg.meter / unit_reg.second)
