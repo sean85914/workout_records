@@ -283,3 +283,9 @@ def fix_swim_distance(swim_datas, target_id, correct_distance):
     row[distance_idx] = correct_distance * unit_reg.meter
     duration = row[moving_time_idx].total_seconds()
     row[mean_speed_idx] = round(correct_distance / duration, 3) * (unit_reg.meter / unit_reg.second)
+
+
+def remove_activities(datas, ids):
+    ids_set = set(ids)
+    for data in datas:
+        data['datas'][:] = [row for row in data['datas'] if row[0] not in ids_set]
