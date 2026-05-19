@@ -2,7 +2,8 @@ import os
 from glob import glob
 from zoneinfo import ZoneInfo
 from datetime import datetime
-from crawl_data import connect, collect_activities, save_data, load_data, to_html
+from crawl_data import (connect, collect_activities, save_data, load_data, to_html,
+                        fix_swim_distance)
 
 client, _ = connect(
     client_id=os.environ["STRAVA_CLIENT_ID"],
@@ -24,6 +25,15 @@ datas = collect_activities(
     datas,
     after=datetime(y, m, d, tzinfo=ZoneInfo("Asia/Taipei"))
 )
+
+fix_activities = os.environ.get("FIX_ACTIVITIES", "")
+
+if fix_activities:
+    index = next(i for i, r in enumerate(glob('data/*.pkl')) if r.find('swim') != -1)
+    for item in fix_activities.split(","):
+        activity_id, distance = item.strip().split(":")
+        fix_swim_distance(datas[index], int(activity_id), float(distance))
+
 
 for data in datas:
     save_data(data['datas'], data['meta']['type'])

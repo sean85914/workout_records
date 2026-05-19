@@ -2,6 +2,11 @@ name: Update workout records
 
 on:
   workflow_dispatch:
+    inputs:
+      fix_activities:
+        description: '要修正的活動，格式: id:距離,id:距離'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -27,6 +32,7 @@ jobs:
           STRAVA_CLIENT_ID: ${{ vars.STRAVA_CLIENT_ID }}
           STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
           STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
+          FIX_ACTIVITIES: ${{ inputs.fix_activities }}
         run: cd python && python main.py
 
       - name: Commit and push if changed
