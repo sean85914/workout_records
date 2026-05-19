@@ -19,7 +19,9 @@ function renderDashboard(allStats) {
             : "—";
         dashboard.insertAdjacentHTML("beforeend", `
             <div class="dashboard-card" style="--card-color: ${color}">
-                <div class="card-title">${emoji} ${label}</div>
+                <div class="card-title">
+                    <a href="${type}.html">${emoji} ${label}</a>
+                </div>
                 <div class="card-count">${data.count} 次</div>
                 <div class="card-time">${data.count > 0 ? timeStr : "—"}</div>
                 <div class="card-dist">${data.count > 0 ? distStr : "—"}</div>

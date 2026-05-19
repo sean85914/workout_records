@@ -142,6 +142,15 @@
     color: #2c3e50;
 }
 
+.card-title a {
+    text-decoration: none;
+    color: #2c3e50;
+}
+
+.card-title a:hover {
+    text-decoration: underline;
+}
+
 .card-count {
     font-size: 24px;
     font-weight: bold;
@@ -156,4 +165,12 @@
 
 .dashboard-card {
     border-top: 4px solid var(--card-color, #ccc);
+}
+
+.toggle-btn {
+    font-size: 0.8rem;
+}
+
+.toggle-btn.active {
+    font-weight: 1000;
 }
