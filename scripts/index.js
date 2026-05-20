@@ -1,14 +1,17 @@
 import { parseTableToRows, onOpenDialog, onCloseDialog, onDialogClose,
-         onDownloadReport, parseDashboardData } from "./utils.js";
+         onDownloadReport, parseDashboardData, renderTrendChart,
+         aggregateByPeriod } from "./utils.js";
+
+
+const config = {
+    Swim:           { label: "游泳", emoji: "🏊", color: "#3498db" },
+    Ride:           { label: "單車", emoji: "🚴", color: "#2ecc71" },
+    Run:            { label: "跑步", emoji: "🏃", color: "#e74c3c" },
+    WeightTraining: { label: "重訓", emoji: "🏋", color: "#f39c12" },
+};
 
 
 function renderDashboard(allStats) {
-    const config = {
-        Swim:           { label: "游泳", emoji: "🏊", color: "#3498db" },
-        Ride:           { label: "單車", emoji: "🚴", color: "#2ecc71" },
-        Run:            { label: "跑步", emoji: "🏃", color: "#e74c3c" },
-        WeightTraining: { label: "重訓", emoji: "🏋", color: "#f39c12" },
-    };
     const dashboard = document.getElementById("dashboard");
     for (const [type, data] of Object.entries(allStats)) {
         const { label, emoji, color } = config[type];
@@ -20,7 +23,7 @@ function renderDashboard(allStats) {
         dashboard.insertAdjacentHTML("beforeend", `
             <div class="dashboard-card" style="--card-color: ${color}">
                 <div class="card-title">
-                    <a href="${type}.html">${emoji} ${label}</a>
+                    ${emoji}<a href="${type}.html"> ${label}</a>
                 </div>
                 <div class="card-count">${data.count} 次</div>
                 <div class="card-time">${data.count > 0 ? timeStr : "—"}</div>
@@ -28,6 +31,14 @@ function renderDashboard(allStats) {
             </div>
         `);
     }
+}
+
+function updateChart() {
+    const table = cachedTables[trend.type];
+    const data = aggregateByPeriod(trend.type, table, trend.period);
+    const color = config[trend.type].color;
+    document.getElementById("trend-chart").style.setProperty("--chart-color", color);
+    renderTrendChart(data);
 }
 
 
@@ -55,6 +66,13 @@ for (const type of types) {
 
 renderDashboard(dashboardStats);
 
+let trend = {
+    type: document.querySelector(".type-btn.active").dataset.type,
+    period: document.querySelector(".period-btn.active").dataset.period,
+};
+
+updateChart();
+
 openBtn.addEventListener("click", onOpenDialog);
 cancelBtn.addEventListener('click', onCloseDialog);
 dialog.addEventListener('close', () => {
@@ -79,3 +97,25 @@ document.querySelectorAll(".toggle-btn").forEach(btn => {
         renderDashboard(newStats);
     });
 });
+
+
+document.querySelectorAll(".type-btn").forEach(btn => {
+    btn.addEventListener("click", e => {
+        document.querySelector(".type-btn.active").classList.remove("active");
+        e.target.classList.add("active");
+        trend.type = e.target.dataset.type;
+        updateChart();
+    });
+});
+
+document.querySelectorAll(".period-btn").forEach(btn => {
+    btn.addEventListener("click", e => {
+        document.querySelector(".period-btn.active").classList.remove("active");
+        e.target.classList.add("active");
+        trend.period = e.target.dataset.period;
+        document.getElementById('trend-period').innerText = ` ${e.target.innerText}`;
+        updateChart();
+    });
+});
+
+const tooltip = document.getElementById("rowTooltip");

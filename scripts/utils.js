@@ -14,7 +14,7 @@ const TIME_PATTERN = /([0-9]{2}):([0-9]{2}):([0-9]{2})/;
 // 顏色映射
 export const colorScale = d3.scaleOrdinal()
     .domain(["WeightTraining", "Run", "Swim", "Ride"])
-    .range(["yellow", "red", "blue", "green"]);
+    .range(["#f39c12", "#e74c3c", "#3498db", "#2ecc71"]);
 
 
 export class Time {
@@ -399,4 +399,164 @@ export function onDownloadReport() {
         URL.revokeObjectURL(url);
     };
     img.src = url;
+}
+
+export function aggregateByPeriod(type, table, period) {
+    const headers = [...table.getElementsByTagName("th")].map(th => th.innerText);
+    const dateIdx = headers.indexOf("Date");
+    const elapsedIdx = headers.indexOf("Elapsed Time");
+    const distIdx = ["Distance", "Distance (km)"].reduce(
+        (found, name) => found !== -1 ? found : headers.indexOf(name), -1
+    );
+
+    const now = new Date();
+    const buckets = [];
+
+    if (period === "week") {  // 12 weeks
+        for (let i = 11; i >= 0; i--) {
+            const end = new Date(now - i * 7 * 24 * 60 * 60 * 1000);
+            const start = new Date(end - 7 * 24 * 60 * 60 * 1000);
+            buckets.push({
+                start,
+                end,
+                label: `${end.getMonth()+1}/${end.getDate()}`,
+                value: 0,
+                count: 0,
+                time: 0,
+            });
+        }
+    } else {  // 12 months
+        for (let i = 11; i >= 0; i--) {
+            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const end = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+            buckets.push({
+                start: d,
+                end,
+                label: `${d.getFullYear()}/${d.getMonth()+1}`,
+                value: 0,
+                count: 0,
+                time: 0,
+            });
+        }
+    }
+
+    const useTime = type === "WeightTraining" || distIdx === -1;
+
+    [...table.querySelector("tbody").querySelectorAll("tr")].forEach(row => {
+        const tds = row.querySelectorAll("td");
+        const date = new Date(tds[dateIdx]?.innerText);
+        const bucket = buckets.find(b => date >= b.start && date < b.end);
+        if (!bucket) return;
+
+        bucket.count += 1;
+        bucket.time += Time.fromString(tds[elapsedIdx].innerText).toSeconds();
+        if (!useTime) {
+            bucket.value += parseFloat(tds[distIdx].innerText) || 0;
+        } else bucket.value = bucket.time;
+    });
+
+    return { buckets, unit: useTime ? "min" : (type === "Swim" ? "m" : "km"), useTime };
+}
+
+export function renderTrendChart({ buckets, unit, useTime }) {
+    const container = document.getElementById("trend-chart");
+    const tooltip = document.getElementById("rowTooltip");
+    container.innerHTML = "";
+
+    const margin = { top: 20, right: 20, bottom: 30, left: 50 };
+    const width = container.clientWidth - margin.left - margin.right;
+    const height = 200 - margin.top - margin.bottom;
+
+    const svg = d3.select("#trend-chart")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    const x = d3.scalePoint()
+        .domain(buckets.map(b => b.label))
+        .range([0, width]);
+
+    const y = d3.scaleLinear()
+        .domain([0, d3.max(buckets, b => b.value) * 1.1])
+        .range([height, 0]);
+
+    // 面積
+    const area = d3.area()
+        .x(b => x(b.label))
+        .y0(height)
+        .y1(b => y(b.value))
+        .curve(d3.curveMonotoneX);
+
+    // 折線
+    const line = d3.line()
+        .x(b => x(b.label))
+        .y(b => y(b.value))
+        .curve(d3.curveMonotoneX);
+
+    svg.append("path")
+        .datum(buckets)
+        .attr("fill", `var(--chart-color, #3498db)`)
+        .attr("fill-opacity", 0.3)
+        .attr("d", area);
+
+    svg.append("path")
+        .datum(buckets)
+        .attr("fill", "none")
+        .attr("stroke", `var(--chart-color, #3498db)`)
+        .attr("stroke-width", 2)
+        .attr("d", line);
+
+    // 圓點
+    svg.selectAll("circle")
+        .data(buckets)
+        .enter()
+        .append("circle")
+        .attr("cx", b => x(b.label))
+        .attr("cy", b => y(b.value))
+        .attr("r", 4)
+        .attr("fill", `var(--chart-color, #3498db)`)
+        .on("mouseover", (event, b) => {
+            let display = useTime
+                ? `${Time.fromSeconds(b.value).toString()}`
+                : unit === "m" ? `${b.value.toFixed(1)}m` : `${b.value.toFixed(1)}km`;
+            display += `<br>${b.count} 次`;
+            if (!useTime) display += `<br>${Time.fromSeconds(b.time).toString()}`;
+            tooltip.style.display = 'block';
+            const start = b.start;
+            const end = b.end;
+            const label = `${start.getMonth()+1}/${start.getDate()} - ${end.getMonth()+1}/${end.getDate()}`;
+            tooltip.innerHTML = `${label}<br>${display}`;
+        })
+        .on("mousemove", (event) => {
+            const offset = 15;
+            const tipWidth = tooltip.offsetWidth;
+            const tipHeight = tooltip.offsetHeight;
+
+            let x = event.clientX + offset;
+            let y = event.clientY + offset;
+
+            if (x + tipWidth > window.innerWidth) x = event.clientX - tipWidth - offset;
+            if (y + tipHeight > window.innerHeight) y = event.clientY - tipHeight - offset;
+            tooltip.style.left = x + 'px';
+            tooltip.style.top = y + 'px';
+        })
+        .on("mouseout", () => {
+            tooltip.style.display = 'none';
+        });
+
+    // x 軸（只顯示部分 label 避免擠）
+    svg.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(x).tickValues(
+            buckets.filter((_, i) => i % 3 === 0 || i === buckets.length - 1).map(b => b.label)
+        ));
+
+    // y 軸
+    svg.append("g")
+        .call(d3.axisLeft(y).ticks(4).tickFormat(v => {
+            if (useTime) return `${Math.round(v / 60)}m`;
+            return unit === "m" ? `${v}m` : `${v.toFixed(1)}km`;
+        }));
 }
