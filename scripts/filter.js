@@ -12,6 +12,8 @@ document.getElementById("toggleFilter").addEventListener("click", () => {
     if (distSlider) {
         const distIndex = Array.from(document.querySelectorAll('#myTable thead th'))
             .findIndex(th => th.innerText.includes('Distance'));
+        const unit = document.querySelectorAll('#myTable thead th')[distIndex].includes('km')
+            ? "km" : "m";
         const distArray = Array.from(document.querySelectorAll('#myTable tbody tr'))
             .map(tr => Number(tr.querySelectorAll('td')[distIndex].innerText));
         const distMax = Math.ceil(Math.max(...distArray));
@@ -21,10 +23,10 @@ document.getElementById("toggleFilter").addEventListener("click", () => {
             range: { min: 0, max: distMax },
             step: 1,
         });
-        document.getElementById("dist-range-label").textContent = `0 ~ ${distMax} km`;
+        document.getElementById("dist-range-label").textContent = `0 ~ ${distMax} ${unit}`;
         distSlider.noUiSlider.on("update", (values) => {
             const [min, max] = values.map(Number);
-            document.getElementById("dist-range-label").textContent = `${min} ~ ${max} km`;
+            document.getElementById("dist-range-label").textContent = `${min} ~ ${max} ${unit}`;
             filterTable();
         });
     }
@@ -42,10 +44,10 @@ document.getElementById("toggleFilter").addEventListener("click", () => {
             range: { min: 0, max: elevMax },
             step: 1,
         });
-        document.getElementById("elev-range-label").textContent = `0 ~ ${elevMax} km`;
+        document.getElementById("elev-range-label").textContent = `0 ~ ${elevMax} m`;
         elevSlider.noUiSlider.on("update", (values) => {
             const [min, max] = values.map(Number);
-            document.getElementById("elev-range-label").textContent = `${min} ~ ${max} km`;
+            document.getElementById("elev-range-label").textContent = `${min} ~ ${max} m`;
             filterTable();
         });
     }

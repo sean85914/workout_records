@@ -13,7 +13,6 @@ const openBtn = document.getElementById('openReportBtn');
 const cancelBtn = document.getElementById('cancelBtn');
 const downloadBtn = document.getElementById("downloadBtn");
 
-document.getElementById("reset").addEventListener("click", resetFilter);
 
 accumulateTable();  // 先加總總表
 const rows = parseTableToRows(type, table);
