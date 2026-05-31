@@ -12,7 +12,7 @@ document.getElementById("toggleFilter").addEventListener("click", () => {
     if (distSlider) {
         const distIndex = Array.from(document.querySelectorAll('#myTable thead th'))
             .findIndex(th => th.innerText.includes('Distance'));
-        const unit = document.querySelectorAll('#myTable thead th')[distIndex].includes('km')
+        const unit = document.querySelectorAll('#myTable thead th')[distIndex].innerText.includes('km')
             ? "km" : "m";
         const distArray = Array.from(document.querySelectorAll('#myTable tbody tr'))
             .map(tr => Number(tr.querySelectorAll('td')[distIndex].innerText));
