@@ -182,10 +182,36 @@
     border-top: 4px solid var(--card-color, #ccc);
 }
 
-.toggle-btn, .type-btn, .period-btn {
+.toggle-btn, .type-btn, .period-btn, .location-btn {
     font-size: 0.8rem;
 }
 
-.toggle-btn.active, .type-btn.active, .period-btn.active {
+.toggle-btn.active, .type-btn.active, .period-btn.active, .location-btn.active {
     font-weight: 1000;
+}
+
+#dist-slider .noUi-connect {
+    background: #3498db;
+}
+
+#elev-slider .noUi-connect {
+    background: #2ecc71;
+}
+
+.noUi-handle {
+    width: 16px !important;
+    height: 16px !important;
+    border-radius: 50% !important;
+    top: 0px !important;
+    right: -7px !important;
+    box-shadow: none !important;
+}
+
+.noUi-handle::before,
+.noUi-handle::after {
+    display: none !important;
+}
+
+.noUi-target {
+    height: 4px;
 }

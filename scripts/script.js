@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { Time, colorScale, resetFilter, filterTable, accumulateTable,
+import { Time, colorScale, accumulateTable,
          parseTableToRows, onOpenDialog, onCloseDialog, onDialogClose,
          onDownloadReport } from "./utils.js";
 
@@ -13,20 +13,6 @@ const openBtn = document.getElementById('openReportBtn');
 const cancelBtn = document.getElementById('cancelBtn');
 const downloadBtn = document.getElementById("downloadBtn");
 
-document.getElementById("startDate").addEventListener("change", filterTable);
-document.getElementById("endDate").addEventListener("change", e => {
-    const start = document.getElementById("startDate").value;
-    const end = document.getElementById("endDate").value;
-    if (!start || !end)
-        return;
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    if (endDate < startDate) {
-        // 如果end比start還前面，就設定end與start同一天
-        document.getElementById("endDate").value = start;
-    }
-    filterTable();
-});
 document.getElementById("reset").addEventListener("click", resetFilter);
 
 accumulateTable();  // 先加總總表

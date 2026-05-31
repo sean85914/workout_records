@@ -48,22 +48,18 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>%s紀錄</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider/dist/nouislider.min.css">
     <script type="importmap">
     {
       "imports": {
-        "d3": "https://cdn.jsdelivr.net/npm/d3@7/+esm"
+        "d3": "https://cdn.jsdelivr.net/npm/d3@7/+esm",
+        "nouislider": "https://cdn.jsdelivr.net/npm/nouislider/dist/nouislider.mjs"
       }
     }
     </script>
 </head>
 <body>
-    <div class="filter-container" style="margin-bottom: 20px;">
-        <label for="startDate">起始日期：</label>
-        <input type="date" id="startDate">
-        <label for="endDate" style="margin-left: 20px;">結束日期：</label>
-        <input type="date" id="endDate">
-        <button id="reset">重設</button>
-    </div>
+%s
     <a href="./index.html">回到首頁</a>
 %s
     <button id="backToTop" title="回到頂部">▲</button>
@@ -87,8 +83,62 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     </dialog>
     <div id="chart" class="chart-container"></div>
     <canvas id="exportCanvas"></canvas>
+    <script type="module" src="./scripts/filter.js"></script>
     <script type="module" src="./scripts/script.js"></script>
 </body>'''
+
+LOCATION_OPTIONS = {
+    'Ride': ('全部', '訓練台', '戶外'),
+    'Run': ('全部', '跑步機', '戶外'),
+    'Swim': ('全部', '泳池', '戶外'),
+}
+
+
+def form_filter_html(work_type):
+    dist_row = '''
+            <div class="filter-row">
+                <label>距離：</label>
+                <span id="dist-range-label">0 ~ 100km</span>
+                <div id="dist-slider"></div>
+            </div>''' if work_type != 'WeightTraining' else ''
+
+    elev_row = '''
+            <div class="filter-row">
+                <label>爬升：</label>
+                <span id="elev-range-label">0 ~ 100m</span>
+                <div id="elev-slider"></div>
+            </div>''' if work_type in ['Run', 'Ride'] else ''
+
+    location_row = ''
+    if work_type in LOCATION_OPTIONS:
+        indent = ' ' * 20
+        options = ''.join(
+            f'\n{indent}<button class="location-btn {" active" if i == 0 else ""}" data-value="{opt}">{opt}</button>'
+            for i, opt in enumerate(LOCATION_OPTIONS[work_type])
+        )
+        location_row = f'''
+            <div class="filter-row">
+                <label>地點：</label>
+                <div id="location-toggle">{options}
+                </div>
+            </div>'''
+
+    return f'''    <div id="filter-section">
+        <button id="toggleFilter">▼ 篩選</button>
+        <div id="filter-panel" style="display: none;">
+            <div class="filter-row">
+                <label>起始日期：</label>
+                <input type="date" id="startDate">
+                <label>結束日期：</label>
+                <input type="date" id="endDate">
+            </div>
+            <div class="filter-row">
+                <label>關鍵字：</label>
+                <input type="text" id="keyword" placeholder="活動名稱">
+            </div>{dist_row}{elev_row}{location_row}
+            <button id="reset">重設</button>
+        </div>
+    </div>'''
 
 
 def save_data(data, work_type):
@@ -265,7 +315,7 @@ def to_html(data):
         assert False, f"Unsupported type: {work_type}"
     table_str = df.to_html(index=False, escape=False, na_rep='', table_id='myTable')
     table_str = table_str.replace('\\r', '')
-    html = HTML_TEMPLATE % (work_type_zh, add_indent(table_str, 4))
+    html = HTML_TEMPLATE % (work_type_zh, form_filter_html(work_type), add_indent(table_str, 4))
     with open(f'{work_type}.html', 'w') as f:
         f.write(html)
     return f.name

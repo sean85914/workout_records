@@ -64,52 +64,6 @@ function parseTime(input) {
     }
 }
 
-export function resetFilter() {
-    document.getElementById('startDate').value = '';
-    document.getElementById('endDate').value = '';
-    filterTable();
-}
-
-export function filterTable() {
-    // 獲取選擇的日期數值
-    const startDateInput = document.getElementById('startDate').value;
-    const endDateInput = document.getElementById('endDate').value;
-    const table = document.getElementById("myTable");
-    const headerArr = [...table.getElementsByTagName("th")].map(th => th.innerText);
-    const tr = table.querySelector("tbody").getElementsByTagName("tr");
-    const dateColumnIndex = headerArr.indexOf("Date");
-
-    // 將輸入轉為 Date 物件（若無輸入則設為極值)
-    const start = startDateInput ? new Date(startDateInput.replace(/-/g, '/')) : null;
-    const end = endDateInput ? new Date(endDateInput.replace(/-/g, '/')) : null;
-
-    // 從 index 1 開始（跳過 table header）
-    for (let i = 0; i < tr.length; i++) {
-        const td = tr[i].getElementsByTagName("td")[dateColumnIndex];
-        if (td) {
-            const rowDate = new Date(td.textContent || td.innerText);
-            let showRow = true;
-
-            // 判斷邏輯
-            if (start && rowDate < start) {
-                showRow = false;
-            }
-            // 結束日期通常要設為該日的 23:59:59，這裡簡單處理
-            if (end) {
-                const endLimit = new Date(end);
-                endLimit.setHours(23, 59, 59);
-                if (rowDate > endLimit) {
-                    showRow = false;
-                }
-            }
-
-            // 執行隱藏或顯示
-            tr[i].style.display = showRow ? "" : "none";
-        }
-    }
-    accumulateTable();
-}
-
 export function accumulateTable() {
     const table = document.getElementById("myTable");
     const tr = table.querySelector("tbody").getElementsByTagName("tr");

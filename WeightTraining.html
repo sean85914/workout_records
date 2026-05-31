@@ -5,21 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>重量訓練紀錄</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider/dist/nouislider.min.css">
     <script type="importmap">
     {
       "imports": {
-        "d3": "https://cdn.jsdelivr.net/npm/d3@7/+esm"
+        "d3": "https://cdn.jsdelivr.net/npm/d3@7/+esm",
+        "nouislider": "https://cdn.jsdelivr.net/npm/nouislider/dist/nouislider.mjs"
       }
     }
     </script>
 </head>
 <body>
-    <div class="filter-container" style="margin-bottom: 20px;">
-        <label for="startDate">起始日期：</label>
-        <input type="date" id="startDate">
-        <label for="endDate" style="margin-left: 20px;">結束日期：</label>
-        <input type="date" id="endDate">
-        <button id="reset">重設</button>
+    <div id="filter-section">
+        <button id="toggleFilter">▼ 篩選</button>
+        <div id="filter-panel" style="display: none;">
+            <div class="filter-row">
+                <label>起始日期：</label>
+                <input type="date" id="startDate">
+                <label>結束日期：</label>
+                <input type="date" id="endDate">
+            </div>
+            <div class="filter-row">
+                <label>關鍵字：</label>
+                <input type="text" id="keyword" placeholder="活動名稱">
+            </div>
+            <button id="reset">重設</button>
+        </div>
     </div>
     <a href="./index.html">回到首頁</a>
     <table border="1" class="dataframe" id="myTable">
@@ -3469,5 +3480,6 @@
     </dialog>
     <div id="chart" class="chart-container"></div>
     <canvas id="exportCanvas"></canvas>
+    <script type="module" src="./scripts/filter.js"></script>
     <script type="module" src="./scripts/script.js"></script>
 </body>
