@@ -76,6 +76,8 @@ document.getElementById("endDate").addEventListener("change", e => {
     filterTable();
 });
 
+document.getElementById("reset").addEventListener("click", resetFilter);
+
 export function resetFilter() {
     document.getElementById('startDate').value = '';
     document.getElementById('endDate').value = '';
