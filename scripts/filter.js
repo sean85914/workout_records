@@ -183,4 +183,78 @@ export function filterTable() {
         }
     }
     accumulateTable();
+    syncToURL();
 }
+
+
+function syncToURL() {
+    const params = new URLSearchParams();
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const keyword = document.getElementById('keyword').value;
+    const location = document.querySelector('#location-toggle button.active')?.dataset.value;
+    const distSlider = document.getElementById('dist-slider');
+    const elevSlider = document.getElementById('elev-slider');
+
+    if (startDate) params.set('start', startDate);
+    if (endDate) params.set('end', endDate);
+    if (keyword) params.set('q', keyword);
+    if (location && location !== '全部') params.set('loc', location);
+    if (distSlider?.noUiSlider) {
+        const [min, max] = distSlider.noUiSlider.get().map(Number);
+        if (min > 0) params.set('distMin', min);
+        if (max < distSlider.noUiSlider.options.range.max) params.set('distMax', max);
+    }
+    if (elevSlider?.noUiSlider) {
+        const [min, max] = elevSlider.noUiSlider.get().map(Number);
+        if (min > 0) params.set('elevMin', min);
+        if (max < elevSlider.noUiSlider.options.range.max) params.set('elevMax', max);
+    }
+
+    const newURL = `${window.location.pathname}?${params.toString()}`;
+    window.history.replaceState(null, '', newURL);
+}
+
+function restoreFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const keys = ['start', 'end', 'q', 'loc', 'distMin', 'distMax', 'elevMin', 'elevMax'];
+    const hasFilter = keys.some(key => params.has(key));
+    if (hasFilter) {
+        // 展開過濾畫面
+        document.getElementById('toggleFilter').click();
+    }
+    if (params.get('start')) {
+        document.getElementById('startDate').value = params.get('start');
+    }
+    if (params.get('end')) {
+        document.getElementById('endDate').value = params.get('end');
+    }
+    if (params.get('q')) {
+        document.getElementById('keyword').value = params.get('q');
+    }
+    if (params.get('loc')) {
+        document.querySelector(`#location-toggle [data-value="${params.get('loc')}"]`)?.click();
+    }
+
+    const distSlider = document.getElementById('dist-slider');
+    if (distSlider?.noUiSlider && (params.has('distMin') || params.has('distMax'))) {
+        const [curMin, curMax] = distSlider.noUiSlider.get().map(Number);
+        distSlider.noUiSlider.set([
+            params.has('distMin') ? Number(params.get('distMin')) : curMin,
+            params.has('distMax') ? Number(params.get('distMax')) : curMax,
+        ]);
+    }
+
+    const elevSlider = document.getElementById('elev-slider');
+    if (elevSlider?.noUiSlider && (params.has('elevMin') || params.has('elevMax'))) {
+        const [curMin, curMax] = elevSlider.noUiSlider.get().map(Number);
+        elevSlider.noUiSlider.set([
+            params.has('elevMin') ? Number(params.get('elevMin')) : curMin,
+            params.has('elevMax') ? Number(params.get('elevMax')) : curMax,
+        ]);
+    }
+
+    if (hasFilter) filterTable();
+}
+
+restoreFromURL();
