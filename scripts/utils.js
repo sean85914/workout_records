@@ -154,6 +154,7 @@ export function parseTableToRows(type, table) {
     const rows = [];
     const tr = table.querySelector("tbody").querySelectorAll("tr");
     const headerArr = [...table.getElementsByTagName("th")].map(th => th.innerText);
+    const nameIndex = headerArr.indexOf("Name");
     const dateIndex = headerArr.indexOf("Date");
     const durationIndex = headerArr.indexOf("Elapsed Time");
     tr.forEach(row => {
@@ -167,9 +168,9 @@ export function parseTableToRows(type, table) {
             end.getSeconds() + duration.s
         );
         rows.push({
-            start: start,
-            end: end,
-            type: type
+            start, end, type,
+            url: tds[nameIndex].querySelector("a")?.href || null,
+            name: tds[nameIndex].querySelector("a")?.innerText || null,
         });
     })
     return rows;
@@ -207,6 +208,7 @@ export function generateChart(year, monthIndex, rows) {
     if ( !document.getElementById("chart") ) {
         return;
     }
+    const tooltip = document.getElementById("rowTooltip");
     // A. 清除舊圖表
     d3.select("#chart").selectAll("*").remove();
 
@@ -280,7 +282,27 @@ export function generateChart(year, monthIndex, rows) {
         })
         .attr("fill", d => colorScale(d.type))
         .attr("stroke", "#333")
-        .attr("stroke-width", 0.5);
+        .attr("stroke-width", 0.5)
+        .style("cursor", "pointer")
+        .on("click", (event, d) => {
+            window.open(d.url, "_blank");
+        })
+        .on("mouseover", (event, d) => {
+            tooltip.innerText = d.name;
+            tooltip.style.display = "block";
+        })
+        .on("mousemove", (event) => {
+            const offset = 15;
+            const tipWidth = tooltip.offsetWidth;
+            const tipHeight = tooltip.offsetHeight;
+            let x = event.clientX + offset;
+            let y = event.clientY + offset;
+            if (x + tipWidth > window.innerWidth) x = event.clientX - tipWidth - offset;
+            if (y + tipHeight > window.innerHeight) y = event.clientY - tipHeight - offset;
+            tooltip.style.left = x + "px";
+            tooltip.style.top = y + "px";
+        })
+        .on("mouseout", () => { tooltip.style.display = "none"; });
 
     // 6. 繪製座標軸
     svg.append("g")
