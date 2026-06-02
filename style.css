@@ -215,3 +215,52 @@
 .noUi-target {
     height: 4px;
 }
+
+#best-records-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    font-family: Arial, sans-serif;
+    margin-bottom: 24px;
+}
+
+#best-records-section h2 {
+    font-family: Arial, sans-serif;
+    margin: 0 0 12px 0;
+}
+
+#best-records {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.best-record-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: Arial, sans-serif;
+}
+
+.best-label {
+    width: 120px;
+    color: #555;
+    font-size: 14px;
+}
+
+.best-value {
+    font-size: 20px;
+    font-weight: bold;
+    color: #2c3e50;
+    text-decoration: none;
+}
+
+.best-value:hover {
+    text-decoration: underline;
+}
+
+.best-date {
+    font-size: 13px;
+    color: #888;
+}

@@ -1,6 +1,6 @@
 import { parseTableToRows, onOpenDialog, onCloseDialog, onDialogClose,
          onDownloadReport, parseDashboardData, renderTrendChart,
-         aggregateByPeriod } from "./utils.js";
+         aggregateByPeriod, parseBestRecords } from "./utils.js";
 
 
 const config = {
@@ -33,6 +33,28 @@ function renderDashboard(allStats) {
     }
 }
 
+function renderBestRecords(allBest) {
+    const container = document.getElementById("best-records");
+    const items = [
+        { emoji: "🏊", label: "游泳最長",   data: allBest.Swim?.bestDist, fmt: v => `${Math.round(v)}m` },
+        { emoji: "🚴", label: "騎行最長",   data: allBest.Ride?.bestDist, fmt: v => `${v.toFixed(1)}km` },
+        { emoji: "🏃", label: "跑步最長",   data: allBest.Run?.bestDist,  fmt: v => `${v.toFixed(1)}km` },
+        { emoji: "🚴", label: "騎行最大爬升", data: allBest.Ride?.bestElev, fmt: v => `${Math.round(v)}m` },
+        { emoji: "🏃", label: "跑步最大爬升", data: allBest.Run?.bestElev,  fmt: v => `${Math.round(v)}m` },
+    ];
+
+    items.forEach(({ emoji, label, data, fmt }) => {
+        if (!data) return;
+        container.insertAdjacentHTML("beforeend", `
+            <div class="best-record-row">
+                <span class="best-label">${emoji} ${label}</span>
+                <a href="${data.url}" target="_blank" class="best-value">${fmt(data.value)}</a>
+                <span class="best-date">${data.date}</span>
+            </div>
+        `);
+    });
+}
+
 function updateChart() {
     const table = cachedTables[trend.type];
     const data = aggregateByPeriod(trend.type, table, trend.period);
@@ -50,6 +72,7 @@ const downloadBtn = document.getElementById("downloadBtn");
 const rows = [];
 const cachedTables = {};
 const dashboardStats = {};
+const allBest = {};
 const types = ["Swim", "Ride", "Run", "WeightTraining"];
 for (const type of types) {
     const res = await fetch(`${type}.html`);
@@ -62,9 +85,11 @@ for (const type of types) {
     const _rows = parseTableToRows(type, table);
     rows.push(..._rows);
     dashboardStats[type] = parseDashboardData(type, table);
+    allBest[type] = parseBestRecords(type, table);
 }
 
 renderDashboard(dashboardStats);
+renderBestRecords(allBest);
 
 let trend = {
     type: document.querySelector(".type-btn.active").dataset.type,

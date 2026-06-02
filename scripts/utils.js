@@ -204,6 +204,45 @@ export function parseDashboardData(type, table, days = 7) {
     };
 }
 
+export function parseBestRecords(type, table) {
+    const headers = [...table.getElementsByTagName("th")].map(th => th.innerText);
+    const nameIdx = headers.indexOf("Name");
+    const dateIdx = headers.indexOf("Date");
+    const distIdx = ["Distance", "Distance (km)"].reduce(
+        (found, name) => found !== -1 ? found : headers.indexOf(name), -1
+    );
+    const elevIdx = headers.indexOf("Elevation Gain");
+    const indoorIdx = headers.indexOf("Indoor") !== -1
+        ? headers.indexOf("Indoor") : headers.indexOf("Pool");
+
+    let bestDist = null;
+    let bestElev = null;
+
+    [...table.querySelector("tbody").querySelectorAll("tr")].forEach(row => {
+        const tds = row.querySelectorAll("td");
+        const anchor = tds[nameIdx]?.querySelector("a");
+        const url = anchor?.href || null;
+        const name = anchor?.innerText || '';
+        const date = tds[dateIdx]?.innerText.slice(0, 10) || '';
+        const indoor = tds[indoorIdx]?.innerText === 'O';
+
+        if (distIdx !== -1) {
+            if (type === 'Ride' && indoor) return;
+            const dist = parseFloat(tds[distIdx]?.innerText) || 0;
+            if (!bestDist || dist > bestDist.value)
+                bestDist = { value: dist, date, url, name };
+        }
+
+        if (elevIdx !== -1 && !indoor) {
+            const elev = parseFloat(tds[elevIdx]?.innerText) || 0;
+            if (!bestElev || elev > bestElev.value)
+                bestElev = { value: elev, date, url, name };
+        }
+    });
+
+    return { bestDist, bestElev };
+}
+
 export function generateChart(year, monthIndex, rows) {
     if ( !document.getElementById("chart") ) {
         return;
