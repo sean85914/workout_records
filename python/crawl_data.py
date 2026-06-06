@@ -335,6 +335,20 @@ def fix_swim_distance(swim_datas, target_id, correct_distance):
     row[mean_speed_idx] = round(correct_distance / duration, 3) * (unit_reg.meter / unit_reg.second)
 
 
+def fix_treadmill_distance(run_datas, target_id, correct_distance):
+    if run_datas['meta']['type'] != 'run':
+        raise ValueError('Input data is not with type run')
+    row = next(row for row in run_datas['datas'] if row[0] == target_id)
+    from pint import UnitRegistry
+    unit_reg = UnitRegistry()
+    distance_idx = RUN_COLUMNS.index('Distance')
+    moving_time_idx = RUN_COLUMNS.index('Moving Time')
+    mean_speed_idx = RUN_COLUMNS.index('Mean Speed')
+    row[distance_idx] = correct_distance * unit_reg.meter
+    duration = row[moving_time_idx].total_seconds()
+    row[mean_speed_idx] = round(correct_distance / duration, 3) * (unit_reg.meter / unit_reg.second)
+
+
 def remove_activities(datas, ids):
     ids_set = set(ids)
     for data in datas:

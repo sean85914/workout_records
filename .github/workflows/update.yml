@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       fix_activities:
-        description: '要修正的活動，格式: id:距離,id:距離'
+        description: '要修正的活動，格式: 類型:id:距離,類型:id:距離'
         required: false
         default: ''
 
