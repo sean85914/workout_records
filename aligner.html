@@ -272,6 +272,12 @@ if (data.today.lastStart) {
   const date = new Date(data.today.lastStart);
   document.getElementById("lastStart").innerText = `${formatDate(date)}`;
 }
+
+// 如果 URL 帶有 ?auto，自動點擊 toggleBtn
+const params = new URLSearchParams(window.location.search);
+if (params.has("auto")) {
+  toggle();
+}
 </script>
 
 </body>
