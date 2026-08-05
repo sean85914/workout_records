@@ -277,6 +277,11 @@ if (data.today.lastStart) {
 const params = new URLSearchParams(window.location.search);
 if (params.has("auto")) {
   toggle();
+  // 結束後把 auto 從 URL 移除，避免之後畫面重整又 toggle 一次
+  params.delete("auto");
+  const newQuery = params.toString();
+  const newUrl = window.location.pathname + (newQuery ? "?" + newQuery : "") + window.location.hash;
+  history.replaceState(null, "", newUrl);
 }
 </script>
 
