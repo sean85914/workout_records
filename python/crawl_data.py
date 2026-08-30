@@ -95,6 +95,16 @@ LOCATION_OPTIONS = {
 
 
 def form_filter_html(work_type):
+    '''Build the filter-panel HTML fragment for a workout type.
+
+    Args:
+        work_type (str): Workout type, e.g. ``'Run'``, ``'Ride'``, ``'Swim'`` or
+            ``'WeightTraining'``. Determines which filter rows (distance,
+            elevation, location) are included.
+
+    Returns:
+        str: The HTML markup for the filter section.
+    '''
     dist_row = '''
             <div class="filter-row">
                 <label>距離：</label>
@@ -142,6 +152,16 @@ def form_filter_html(work_type):
 
 
 def save_data(data, work_type):
+    '''Pickle workout records to ``{work_type}.pkl`` with metadata.
+
+    The saved payload wraps the records under a ``'datas'`` key alongside a
+    ``'meta'`` block holding the current timestamp, record count and type.
+
+    Args:
+        data (list | dict): The records to save, either as a list of rows or a
+            dict containing a ``'datas'`` list.
+        work_type (str): Workout type, used as the output file name.
+    '''
     with open(f'{work_type}.pkl', 'wb') as f:
         pickle.dump({
             'meta': {
@@ -154,12 +174,40 @@ def save_data(data, work_type):
 
 
 def load_data(file):
+    '''Load a pickled workout data file.
+
+    Args:
+        file (str): Path to the ``.pkl`` file previously written by
+            :func:`save_data`.
+
+    Returns:
+        dict: The unpickled payload with ``'meta'`` and ``'datas'`` keys.
+    '''
     with open(file, 'rb') as f:
         data = pickle.load(f)
     return data
 
 
 def connect(client_id, client_secret, session=None, refresh_token=None):
+    '''Authenticate a Strava client and return it with a usable refresh token.
+
+    When no ``refresh_token`` is supplied, an interactive OAuth flow is run: an
+    authorization URL is printed and the user is prompted to paste back the
+    returned code. Otherwise the existing refresh token is exchanged for a fresh
+    access token without user interaction.
+
+    Args:
+        client_id (int | str): Strava API application client id.
+        client_secret (str): Strava API application client secret.
+        session (requests.Session, optional): HTTP session to attach to the
+            client during the interactive flow. Defaults to None.
+        refresh_token (str, optional): Existing refresh token; if given, the
+            interactive flow is skipped. Defaults to None.
+
+    Returns:
+        stravalib.client.Client: An authenticated Strava client.
+        str: The refresh token to reuse on the next call.
+    '''
     client = Client()
     if not refresh_token:
         url = client.authorization_url(
@@ -187,6 +235,25 @@ def connect(client_id, client_secret, session=None, refresh_token=None):
 
 
 def collect_activities(client, datas, before=None, after=None):
+    '''Fetch new Strava activities and append them to the matching datasets.
+
+    Activities whose type is not tracked are skipped, as are ones already
+    present in ``datas`` (matched by activity id). ``VirtualRide`` activities are
+    folded into the ``Ride`` dataset. Iteration stops early when the Strava rate
+    limits are close to being exhausted.
+
+    Args:
+        client (stravalib.client.Client): Authenticated Strava client.
+        datas (list): List of dataset dicts, each with a ``'meta'`` (holding the
+            workout ``'type'``) and a ``'datas'`` list of rows. Mutated in place.
+        before (datetime, optional): Only include activities before this time.
+            Defaults to None.
+        after (datetime, optional): Only include activities after this time.
+            Defaults to None.
+
+    Returns:
+        list: The same ``datas`` list, with any new activities appended.
+    '''
     work_types = [data['meta']['type'] for data in datas]
     work_types = [
         ''.join(part.capitalize() for part in wt.split('_'))
@@ -196,10 +263,10 @@ def collect_activities(client, datas, before=None, after=None):
     activities = client.get_activities(before=before, after=after)
     sets = [set([d[0] for d in data['datas']]) for data in datas]
     for act in activities:
-        if act.type not in work_types:
-            print(f'Ignore {act.name} ({act.start_date_local})')
+        if act.type not in work_types and act.type != 'VirtualRide':
+            print(f'Ignore {act.name} ({act.start_date_local}) ({act.type})')
             continue
-        index = work_types.index(act.type)
+        index = work_types.index(act.type if act.type != 'VirtualRide' else 'Ride')
         if act.id in sets[index]:
             print(f'{act.name} already existed, ignore')
             continue
@@ -220,7 +287,7 @@ def collect_activities(client, datas, before=None, after=None):
             data = [getattr(act_detail, ATTRS_MAPPING[k]) for k in WORKOUT_COLUMNS]
         elif act.type == 'Swim':
             data = [getattr(act_detail, ATTRS_MAPPING[k]) for k in SWIM_COLUMNS]
-        elif act.type == 'Ride':
+        elif act.type.endswith('Ride'):  # support VirtualRide
             data = [getattr(act_detail, ATTRS_MAPPING[k]) for k in RIDE_COLUMNS]
         elif act.type == 'Run':
             data = [getattr(act_detail, ATTRS_MAPPING[k]) for k in RUN_COLUMNS]
@@ -233,6 +300,26 @@ def collect_activities(client, datas, before=None, after=None):
 
 
 def form_df(data, add_summarize_line=False):
+    '''Build a display-ready pandas DataFrame from raw workout records.
+
+    Selects the column set for the workout type, sorts by date and derives
+    presentation fields: activity names become Strava anchor links, times are
+    formatted, distances/speeds are converted to km and km/h (or kept in metres
+    for swims), pace and moving-percentage columns are added where relevant.
+
+    Args:
+        data (dict): A dataset dict with ``'meta'`` (holding the workout
+            ``'type'``) and a ``'datas'`` list of rows.
+        add_summarize_line (bool, optional): If True, append a final summary row
+            totalling distance, elevation, moving time and calories. Defaults to
+            False.
+
+    Returns:
+        pandas.DataFrame: The formatted records.
+
+    Raises:
+        AssertionError: If the workout type is not supported.
+    '''
     work_type = data['meta']['type'].replace('_', ' ').title().replace(' ', '')
     if work_type == 'WeightTraining':
         col = WORKOUT_COLUMNS
@@ -301,6 +388,22 @@ def form_df(data, add_summarize_line=False):
 
 
 def to_html(data):
+    '''Render workout records to a standalone ``{WorkType}.html`` file.
+
+    Formats the records via :func:`form_df`, renders them as an HTML table and
+    embeds it into the page template together with the type-specific filter
+    panel, then writes the result to disk.
+
+    Args:
+        data (dict): A dataset dict with ``'meta'`` (holding the workout
+            ``'type'``) and a ``'datas'`` list of rows.
+
+    Returns:
+        str: The path of the written HTML file.
+
+    Raises:
+        AssertionError: If the workout type is not supported.
+    '''
     df = form_df(data)
     work_type = data['meta']['type'].replace('_', ' ').title().replace(' ', '')
     if work_type == 'WeightTraining':
@@ -322,6 +425,22 @@ def to_html(data):
 
 
 def fix_swim_distance(swim_datas, target_id, correct_distance):
+    '''Override the distance and recompute the mean speed of one swim activity.
+
+    Locates the activity by id within the swim dataset and replaces its distance
+    with the corrected value, updating the mean speed to stay consistent. Mutates
+    the row in place.
+
+    Args:
+        swim_datas (dict): The swim dataset dict (``meta['type']`` must be
+            ``'swim'``).
+        target_id (int): Strava activity id of the row to fix.
+        correct_distance (float): Corrected distance in metres.
+
+    Raises:
+        ValueError: If ``swim_datas`` is not a swim dataset.
+        StopIteration: If no row matches ``target_id``.
+    '''
     if swim_datas['meta']['type'] != 'swim':
         raise ValueError('Input data is not with type swim')
     row = next(row for row in swim_datas['datas'] if row[0] == target_id)
@@ -336,6 +455,23 @@ def fix_swim_distance(swim_datas, target_id, correct_distance):
 
 
 def fix_treadmill_distance(run_datas, target_id, correct_distance):
+    '''Override the distance and recompute the mean speed of one run activity.
+
+    Locates the activity by id within the run dataset and replaces its distance
+    with the corrected value, updating the mean speed to stay consistent. Useful
+    for treadmill runs whose recorded distance is unreliable. Mutates the row in
+    place.
+
+    Args:
+        run_datas (dict): The run dataset dict (``meta['type']`` must be
+            ``'run'``).
+        target_id (int): Strava activity id of the row to fix.
+        correct_distance (float): Corrected distance in metres.
+
+    Raises:
+        ValueError: If ``run_datas`` is not a run dataset.
+        StopIteration: If no row matches ``target_id``.
+    '''
     if run_datas['meta']['type'] != 'run':
         raise ValueError('Input data is not with type run')
     row = next(row for row in run_datas['datas'] if row[0] == target_id)
@@ -350,6 +486,13 @@ def fix_treadmill_distance(run_datas, target_id, correct_distance):
 
 
 def remove_activities(datas, ids):
+    '''Remove activities with the given ids from every dataset, in place.
+
+    Args:
+        datas (list): List of dataset dicts, each with a ``'datas'`` list of
+            rows whose first element is the activity id.
+        ids (Iterable[int]): Activity ids to remove.
+    '''
     ids_set = set(ids)
     for data in datas:
         data['datas'][:] = [row for row in data['datas'] if row[0] not in ids_set]
