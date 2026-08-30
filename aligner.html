@@ -27,6 +27,18 @@
       align-items: center;
       gap: 4px;
     }
+    #weekTable {
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+    #weekTable th, #weekTable td {
+      border: 1px solid #ccc;
+      padding: 6px 12px;
+      text-align: center;
+    }
+    #weekTable th {
+      background: #f5f5f5;
+    }
   </style>
 </head>
 <body>
@@ -47,6 +59,13 @@
 <h2>今日配戴目標時數:
 <span id="targetTime">16:00</span>
 </h2>
+<h3>近七天配戴總時間</h3>
+<table id="weekTable">
+  <thead>
+    <tr><th>日期</th><th>配戴總時間</th></tr>
+  </thead>
+  <tbody id="weekBody"></tbody>
+</table>
 <dialog id="editLastStart">
   <input type="datetime-local" id="selectTime">
   <button id="confirm">確認</button>
@@ -160,6 +179,26 @@ function format(ms) {
          `${sec.toString().padStart(2,"0")}`;
 }
 
+// 取得 n 天前的日期字串 (YYYY-mm-dd, 本地時間)
+function dateStrDaysAgo(n) {
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  const offset = d.getTimezoneOffset() * 60000;
+  return new Date(d.getTime() - offset).toISOString().slice(0, 10);
+}
+
+// 渲染近七天配戴總時間表格（不含今天，因為今天還在計時中）
+function renderWeekTable() {
+  const data = load();
+  let rows = "";
+  for (let i = 7; i >= 1; i--) {
+    const ds = dateStrDaysAgo(i);
+    const ms = data[ds] ? data[ds].total : 0;
+    rows += `<tr><td>${ds}</td><td>${format(ms)}</td></tr>`;
+  }
+  document.getElementById("weekBody").innerHTML = rows;
+}
+
 // 更新頁面
 function update() {
   let data = load();
@@ -172,6 +211,7 @@ function update() {
       document.getElementById("toggleBtn").innerText = "開始配戴";
     }
   }
+  renderWeekTable();
 }
 
 // 更新狀態
