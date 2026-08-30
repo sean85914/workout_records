@@ -16,6 +16,14 @@ export const colorScale = d3.scaleOrdinal()
     .domain(["WeightTraining", "Run", "Swim", "Ride"])
     .range(["#f39c12", "#e74c3c", "#3498db", "#2ecc71"]);
 
+// 項目中文名稱
+const typeMeta = {
+    Swim:           { label: "游泳"},
+    Ride:           { label: "單車"},
+    Run:            { label: "跑步"},
+    WeightTraining: { label: "重訓"},
+};
+
 
 export class Time {
     constructor(h, m, s) {
@@ -150,13 +158,18 @@ export function onDialogClose(rows) {
 }
 
 export function parseTableToRows(type, table) {
-    // 建立所有紀錄的起始/終止時間
+    // 建立所有紀錄的起始/終止時間，並記錄總距離
     const rows = [];
     const tr = table.querySelector("tbody").querySelectorAll("tr");
     const headerArr = [...table.getElementsByTagName("th")].map(th => th.innerText);
     const nameIndex = headerArr.indexOf("Name");
     const dateIndex = headerArr.indexOf("Date");
     const durationIndex = headerArr.indexOf("Elapsed Time");
+    const distIndex = ["Distance", "Distance (km)"].reduce(
+        (found, name) => found !== -1 ? found : headerArr.indexOf(name), -1
+    );
+    // 游泳距離單位為公尺，其餘為公里；重訓無距離
+    const distUnit = type === "Swim" ? "m" : (distIndex === -1 ? null : "km");
     tr.forEach(row => {
         const tds = row.querySelectorAll("td");
         const start = new Date(tds[dateIndex].innerText);
@@ -169,6 +182,8 @@ export function parseTableToRows(type, table) {
         );
         rows.push({
             start, end, type,
+            dist: distIndex !== -1 ? (parseFloat(tds[distIndex].innerText) || 0) : null,
+            distUnit,
             url: tds[nameIndex].querySelector("a")?.href || null,
             name: tds[nameIndex].querySelector("a")?.innerText || null,
         });
@@ -365,6 +380,94 @@ export function generateChart(year, monthIndex, rows) {
         .style("font-size", "20px")
         .style("font-weight", "bold")
         .text(`${year}/${monthIndex + 1}`);
+
+    // 7. 各項目統計摘要（次數 / 總時間 / 總距離）
+    const order = ["Swim", "Ride", "Run", "WeightTraining"];
+    const summary = order.map(t => {
+        const items = filterRows.filter(r => r.type === t);
+        if (!items.length) return null;
+        return {
+            type: t,
+            count: items.length,
+            totalSec: d3.sum(items, r => (r.end - r.start) / 1000),
+            totalDist: d3.sum(items, r => r.dist || 0),
+            distUnit: items[0].distUnit,
+        };
+    }).filter(Boolean);
+
+    // 以 legend 方框呈現，插在圖框右上角（凌晨時段通常無運動、留白處）
+    const pad = 10;
+    const rowH = 22;
+    const swatch = 12;
+    const col = { label: 18, countR: 72, ci: 74, time: 100, dist: 168 };
+
+    const legendG = svg.append("g").attr("class", "summary-legend");
+    let maxRight = 0;
+
+    summary.forEach((s, i) => {
+        const cy = pad + i * rowH + rowH / 2; // 該列垂直中心
+        const baseY = cy + 4.5;               // 文字基線
+        const meta = typeMeta[s.type] || { label: s.type };
+
+        // 顏色方塊
+        legendG.append("rect")
+            .attr("x", pad)
+            .attr("y", cy - swatch / 2)
+            .attr("width", swatch)
+            .attr("height", swatch)
+            .attr("rx", 2)
+            .attr("fill", colorScale(s.type))
+            .attr("stroke", "#333")
+            .attr("stroke-width", 0.5);
+
+        // 項目名稱
+        legendG.append("text")
+            .attr("x", pad + col.label).attr("y", baseY)
+            .style("font-size", "13px").attr("fill", "#333")
+            .text(meta.label);
+
+        // 次數：靠右對齊 + 等寬數字
+        legendG.append("text")
+            .attr("x", pad + col.countR).attr("y", baseY)
+            .attr("text-anchor", "end")
+            .style("font-size", "13px").style("font-variant-numeric", "tabular-nums")
+            .attr("fill", "#333").text(s.count);
+        legendG.append("text")
+            .attr("x", pad + col.ci).attr("y", baseY)
+            .style("font-size", "13px").attr("fill", "#333").text("次");
+
+        // 總時間
+        const timeText = legendG.append("text")
+            .attr("x", pad + col.time).attr("y", baseY)
+            .style("font-size", "13px").style("font-variant-numeric", "tabular-nums")
+            .attr("fill", "#333")
+            .text(Time.fromSeconds(Math.round(s.totalSec)).toString());
+        let rowRight = pad + col.time + timeText.node().getComputedTextLength();
+
+        // 總距離（重訓無距離）
+        if (s.distUnit) {
+            const distText = legendG.append("text")
+                .attr("x", pad + col.dist).attr("y", baseY)
+                .style("font-size", "13px").style("font-variant-numeric", "tabular-nums")
+                .attr("fill", "#333")
+                .text(s.distUnit === "m"
+                    ? `${Math.round(s.totalDist)} m`
+                    : `${s.totalDist.toFixed(1)} km`);
+            rowRight = pad + col.dist + distText.node().getComputedTextLength();
+        }
+        maxRight = Math.max(maxRight, rowRight);
+    });
+
+    // 依內容量出方框大小，插入底色框線並定位到右上角
+    const boxW = maxRight + pad;
+    const boxH = pad * 2 + summary.length * rowH;
+    legendG.insert("rect", ":first-child")
+        .attr("x", 0).attr("y", 0)
+        .attr("width", boxW).attr("height", boxH)
+        .attr("rx", 6)
+        .attr("fill", "white").attr("fill-opacity", 0.85)
+        .attr("stroke", "#999").attr("stroke-width", 1);
+    legendG.attr("transform", `translate(${width - boxW - 8}, 8)`);
 
     document.getElementById("chart").scrollIntoView({
         behavior: 'smooth', // 平滑捲動，不會突兀地跳過去
