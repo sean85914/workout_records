@@ -191,7 +191,7 @@ function dateStrDaysAgo(n) {
 function renderWeekTable() {
   const data = load();
   let rows = "";
-  for (let i = 7; i >= 1; i--) {
+  for (let i = 1; i <= 7; i--) {
     const ds = dateStrDaysAgo(i);
     const ms = data[ds] ? data[ds].total : 0;
     rows += `<tr><td>${ds}</td><td>${format(ms)}</td></tr>`;
