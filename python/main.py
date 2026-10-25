@@ -43,9 +43,6 @@ for data in datas:
     save_data(data['datas'], data['meta']['type'])
     to_json(data)
 
-for _type in ['WeightTraining', 'Swim', 'Ride', 'Run']:
-    os.rename(f'{_type}.html', f'../{_type}.html')
-
 for file in glob('*.pkl'):
     os.rename(file, f'data/{file}')
 
