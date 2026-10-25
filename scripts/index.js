@@ -76,7 +76,7 @@ const allBest = {};
 const types = ["swim", "ride", "run", "weight_training"];
 for (const type of types) {
     const capitalizedType = toPascal(type);
-    const res = await fetch(`/python/data/${type}.json`);
+    const res = await fetch(`./python/data/${type}.json`);
     const records = await res.json();
     cachedRecords[capitalizedType] = records;
     const _rows = parseRecordsToRows(capitalizedType, records);

@@ -86,6 +86,6 @@ export async function main(dataUrl) {
     }
 
     // 表格填好後才載入這兩支：它們在 import 時就會同步讀取 #myTable。
-    await import("/scripts/filter.js");
-    await import("/scripts/script.js");
+    await import("./filter.js");
+    await import("./script.js");
 }
