@@ -72,6 +72,11 @@ function parseTime(input) {
     }
 }
 
+function findKey(records, candidates) {
+    const sample = records[0] ?? {};
+    return candidates.find(name => Object.hasOwn(sample, name)) ?? "";
+}
+
 export function accumulateTable() {
     const table = document.getElementById("myTable");
     const tr = table.querySelector("tbody").getElementsByTagName("tr");
@@ -157,99 +162,75 @@ export function onDialogClose(rows) {
     }
 }
 
-export function parseTableToRows(type, table) {
+export function parseRecordsToRows(type, records) {
     // 建立所有紀錄的起始/終止時間，並記錄總距離
     const rows = [];
-    const tr = table.querySelector("tbody").querySelectorAll("tr");
-    const headerArr = [...table.getElementsByTagName("th")].map(th => th.innerText);
-    const nameIndex = headerArr.indexOf("Name");
-    const dateIndex = headerArr.indexOf("Date");
-    const durationIndex = headerArr.indexOf("Elapsed Time");
-    const distIndex = ["Distance", "Distance (km)"].reduce(
-        (found, name) => found !== -1 ? found : headerArr.indexOf(name), -1
-    );
+    const distKey = findKey(records, ["Distance", "Distance (km)"]);
     // 游泳距離單位為公尺，其餘為公里；重訓無距離
-    const distUnit = type === "Swim" ? "m" : (distIndex === -1 ? null : "km");
-    tr.forEach(row => {
-        const tds = row.querySelectorAll("td");
-        const start = new Date(tds[dateIndex].innerText);
-        const duration = Time.fromString(tds[durationIndex].innerText);
+    const distUnit = type === "Swim" ? "m" : (distKey === "" ? null : "km");
+    records.forEach(record => {
+        const start = new Date(record.Date);
+        const duration = Time.fromString(record['Elapsed Time']);
         let end = new Date(start);
         end.setHours(
             end.getHours() + duration.h,
             end.getMinutes() + duration.m,
             end.getSeconds() + duration.s
         );
+        const url = `https://www.strava.com/activities/${record.ID}`;
         rows.push({
             start, end, type,
-            dist: distIndex !== -1 ? (parseFloat(tds[distIndex].innerText) || 0) : null,
+            dist: distKey !== "" ? (parseFloat(record[distKey]) || 0) : null,
             distUnit,
-            url: tds[nameIndex].querySelector("a")?.href || null,
-            name: tds[nameIndex].querySelector("a")?.innerText || null,
+            url,
+            name: record.Name,
         });
     })
     return rows;
 }
 
-export function parseDashboardData(type, table, days = 7) {
-    const headers = [...table.getElementsByTagName("th")].map(th => th.innerText);
-    const dateIdx = headers.indexOf("Date");
-    const elapsedIdx = headers.indexOf("Elapsed Time");
-    const distIdx = ["Distance", "Distance (km)"].reduce(
-        (found, name) => found !== -1 ? found : headers.indexOf(name), -1
-    );
-
+export function parseDashboardData(type, records, days = 7) {
+    const distKey = findKey(records, ["Distance", "Distance (km)"]);
     const ago = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
-    const recent = [...table.querySelector("tbody").querySelectorAll("tr")]
-        .filter(row => new Date(row.querySelectorAll("td")[dateIdx]?.innerText) >= ago);
+    const recent = records.filter(record => new Date(record.Date) >= ago);
 
     let totalSeconds = 0;
     let totalDist = 0;
-    recent.forEach(row => {
-        const tds = row.querySelectorAll("td");
-        totalSeconds += Time.fromString(tds[elapsedIdx].innerText).toSeconds();
-        if (distIdx !== -1) totalDist += parseFloat(tds[distIdx].innerText) || 0;
+    recent.forEach(record => {
+        totalSeconds += Time.fromString(record["Elapsed Time"]).toSeconds();
+        if (distKey !== "") totalDist += parseFloat(record[distKey]) || 0;
     });
 
     return {
         count: recent.length,
         totalTime: Time.fromSeconds(totalSeconds),
-        totalDist: distIdx !== -1 ? totalDist : null,
+        totalDist: distKey !== "" ? totalDist : null,
         distUnit: type === "Swim" ? "m" : type === "WeightTraining" ? null : "km",
     };
 }
 
-export function parseBestRecords(type, table) {
-    const headers = [...table.getElementsByTagName("th")].map(th => th.innerText);
-    const nameIdx = headers.indexOf("Name");
-    const dateIdx = headers.indexOf("Date");
-    const distIdx = ["Distance", "Distance (km)"].reduce(
-        (found, name) => found !== -1 ? found : headers.indexOf(name), -1
-    );
-    const elevIdx = headers.indexOf("Elevation Gain");
-    const indoorIdx = headers.indexOf("Indoor") !== -1
-        ? headers.indexOf("Indoor") : headers.indexOf("Pool");
+export function parseBestRecords(type, records) {
+    const distKey = findKey(records, ["Distance", "Distance (km)"]);
+    const indoorKey = findKey(records, ["Indoor", "Pool"]);
 
     let bestDist = null;
     let bestElev = null;
 
-    [...table.querySelector("tbody").querySelectorAll("tr")].forEach(row => {
-        const tds = row.querySelectorAll("td");
-        const anchor = tds[nameIdx]?.querySelector("a");
-        const url = anchor?.href || null;
-        const name = anchor?.innerText || '';
-        const date = tds[dateIdx]?.innerText.slice(0, 10) || '';
-        const indoor = tds[indoorIdx]?.innerText === 'O';
+    records.forEach(record => {
+        const name = record.Name;
+        const url = `https://www.strava.com/activities/${record.ID}`;
+        const date = record.Date.slice(0, 10) || '';
+        const indoor = indoorKey !== "" ? record[indoorKey] === "O" : true;
 
-        if (distIdx !== -1) {
+        if (distKey !== "") {
             if (type === 'Ride' && indoor) return;
-            const dist = parseFloat(tds[distIdx]?.innerText) || 0;
+            const dist = parseFloat(record[distKey]) || 0;
             if (!bestDist || dist > bestDist.value)
                 bestDist = { value: dist, date, url, name };
         }
 
-        if (elevIdx !== -1 && !indoor) {
-            const elev = parseFloat(tds[elevIdx]?.innerText) || 0;
+        if (Object.hasOwn(record, "Elevation Gain") && !indoor) {
+            const elev = parseFloat(record["Elevation Gain"]) || 0;
             if (!bestElev || elev > bestElev.value)
                 bestElev = { value: elev, date, url, name };
         }
@@ -519,13 +500,8 @@ export function onDownloadReport() {
     img.src = url;
 }
 
-export function aggregateByPeriod(type, table, period) {
-    const headers = [...table.getElementsByTagName("th")].map(th => th.innerText);
-    const dateIdx = headers.indexOf("Date");
-    const elapsedIdx = headers.indexOf("Elapsed Time");
-    const distIdx = ["Distance", "Distance (km)"].reduce(
-        (found, name) => found !== -1 ? found : headers.indexOf(name), -1
-    );
+export function aggregateByPeriod(type, records, period) {
+    const distKey = findKey(records, ["Distance", "Distance (km)"]);
 
     const now = new Date();
     const buckets = [];
@@ -558,18 +534,17 @@ export function aggregateByPeriod(type, table, period) {
         }
     }
 
-    const useTime = type === "WeightTraining" || distIdx === -1;
+    const useTime = type === "WeightTraining" || distKey === "";
 
-    [...table.querySelector("tbody").querySelectorAll("tr")].forEach(row => {
-        const tds = row.querySelectorAll("td");
-        const date = new Date(tds[dateIdx]?.innerText);
+    records.forEach(record => {
+        const date = new Date(record.Date);
         const bucket = buckets.find(b => date >= b.start && date < b.end);
         if (!bucket) return;
 
         bucket.count += 1;
-        bucket.time += Time.fromString(tds[elapsedIdx].innerText).toSeconds();
+        bucket.time += Time.fromString(record["Elapsed Time"]).toSeconds();
         if (!useTime) {
-            bucket.value += parseFloat(tds[distIdx].innerText) || 0;
+            bucket.value += distKey !== "" ? parseFloat(record[distKey]) : 0;
         } else bucket.value = bucket.time;
     });
 

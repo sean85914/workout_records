@@ -2,7 +2,7 @@ import os
 from glob import glob
 from zoneinfo import ZoneInfo
 from datetime import datetime
-from crawl_data import (connect, collect_activities, save_data, load_data, to_html,
+from crawl_data import (connect, collect_activities, save_data, load_data, to_json,
                         fix_swim_distance, fix_treadmill_distance)
 
 client, _ = connect(
@@ -41,12 +41,15 @@ if fix_activities:
 
 for data in datas:
     save_data(data['datas'], data['meta']['type'])
-    to_html(data)
+    to_json(data)
 
 for _type in ['WeightTraining', 'Swim', 'Ride', 'Run']:
     os.rename(f'{_type}.html', f'../{_type}.html')
 
 for file in glob('*.pkl'):
+    os.rename(file, f'data/{file}')
+
+for file in glob('*.json'):
     os.rename(file, f'data/{file}')
 
 print([len(data['datas']) for data in datas])

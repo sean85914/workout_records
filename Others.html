@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>其他紀錄</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider/dist/nouislider.min.css">
+    <script type="importmap">
+    {
+      "imports": {
+        "d3": "https://cdn.jsdelivr.net/npm/d3@7/+esm",
+        "nouislider": "https://cdn.jsdelivr.net/npm/nouislider/dist/nouislider.mjs"
+      }
+    }
+    </script>
+</head>
+<body>
+    <div id="filter-section">
+        <button id="toggleFilter">▼ 篩選</button>
+        <div id="filter-panel" style="display: none;">
+            <div class="filter-row">
+                <label>起始日期：</label>
+                <input type="date" id="startDate">
+                <label>結束日期：</label>
+                <input type="date" id="endDate">
+            </div>
+            <div class="filter-row">
+                <label>關鍵字：</label>
+                <input type="text" id="keyword" placeholder="活動名稱">
+            </div>
+            <button id="reset">重設</button>
+        </div>
+    </div>
+    <a href="./index.html">回到首頁</a>
+    <table border="1" class="dataframe" id="myTable">
+      <thead>
+        <tr style="text-align: right;">
+          <th>ID</th>
+          <th>Type</th>
+          <th>Name</th>
+          <th>Date</th>
+          <th>Elapsed Time</th>
+          <th>Calories</th>
+          <th>Max HR</th>
+          <th>Mean HR</th>
+          <th>Distance</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    <button id="backToTop" title="回到頂部">▲</button>
+    <div id="rowTooltip"></div>
+    <div class="actions">
+        <button id="openReportBtn">生成報表</button>
+        <button id="downloadBtn" disabled="true">下載報表</button>
+    </div>
+    <dialog id="reportDialog">
+        <form method="dialog">
+            <h3>選擇報表月份</h3>
+            <label>
+                年份與月份:
+                <input type="month" id="reportTargetMonth">
+            </label>
+            <div style="margin-top: 15px;">
+                <button type="button" id="cancelBtn">取消</button>
+                <button type="submit" id="confirmBtn">確定</button>
+            </div>
+        </form>
+    </dialog>
+    <div id="chart" class="chart-container"></div>
+    <canvas id="exportCanvas"></canvas>
+    <script type="module">
+        import { main } from "./scripts/loader.js";
+        main("/python/data/others.json");
+    </script>
+</body>
+</html>

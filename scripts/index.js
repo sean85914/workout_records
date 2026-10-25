@@ -1,4 +1,4 @@
-import { parseTableToRows, onOpenDialog, onCloseDialog, onDialogClose,
+import { parseRecordsToRows, onOpenDialog, onCloseDialog, onDialogClose,
          onDownloadReport, parseDashboardData, renderTrendChart,
          aggregateByPeriod, parseBestRecords } from "./utils.js";
 
@@ -9,7 +9,7 @@ const config = {
     Run:            { label: "跑步", emoji: "🏃", color: "#e74c3c" },
     WeightTraining: { label: "重訓", emoji: "🏋", color: "#f39c12" },
 };
-
+const toPascal = s => s.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('');
 
 function renderDashboard(allStats) {
     const dashboard = document.getElementById("dashboard");
@@ -56,8 +56,8 @@ function renderBestRecords(allBest) {
 }
 
 function updateChart() {
-    const table = cachedTables[trend.type];
-    const data = aggregateByPeriod(trend.type, table, trend.period);
+    const records = cachedRecords[trend.type];
+    const data = aggregateByPeriod(trend.type, records, trend.period);
     const color = config[trend.type].color;
     document.getElementById("trend-chart").style.setProperty("--chart-color", color);
     renderTrendChart(data);
@@ -70,22 +70,19 @@ const cancelBtn = document.getElementById('cancelBtn');
 const downloadBtn = document.getElementById("downloadBtn");
 
 const rows = [];
-const cachedTables = {};
+const cachedRecords = {};
 const dashboardStats = {};
 const allBest = {};
-const types = ["Swim", "Ride", "Run", "WeightTraining"];
+const types = ["swim", "ride", "run", "weight_training"];
 for (const type of types) {
-    const res = await fetch(`${type}.html`);
-    const text = await res.text();
-
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(text, "text/html");
-    const table = doc.getElementById("myTable");
-    cachedTables[type] = table;
-    const _rows = parseTableToRows(type, table);
+    const capitalizedType = toPascal(type);
+    const res = await fetch(`/python/data/${type}.json`);
+    const records = await res.json();
+    cachedRecords[capitalizedType] = records;
+    const _rows = parseRecordsToRows(capitalizedType, records);
     rows.push(..._rows);
-    dashboardStats[type] = parseDashboardData(type, table);
-    allBest[type] = parseBestRecords(type, table);
+    dashboardStats[capitalizedType] = parseDashboardData(capitalizedType, records);
+    allBest[capitalizedType] = parseBestRecords(capitalizedType, records);
 }
 
 renderDashboard(dashboardStats);
@@ -115,8 +112,8 @@ document.querySelectorAll(".toggle-btn").forEach(btn => {
         document.getElementById('recentDays').innerHTML = e.target.dataset.range;
         const days = parseInt(e.target.dataset.range);
         const newStats = {};
-        for (const [type, table] of Object.entries(cachedTables)) {
-            newStats[type] = parseDashboardData(type, table, days);
+        for (const [type, records] of Object.entries(cachedRecords)) {
+            newStats[type] = parseDashboardData(type, records, days);
         }
         document.getElementById("dashboard").innerHTML = "";
         renderDashboard(newStats);

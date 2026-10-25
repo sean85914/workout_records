@@ -1,6 +1,7 @@
 import * as d3 from "d3";
+import { state } from "./state.js";
 import { Time, colorScale, accumulateTable,
-         parseTableToRows, onOpenDialog, onCloseDialog, onDialogClose,
+         parseRecordsToRows, onOpenDialog, onCloseDialog, onDialogClose,
          onDownloadReport } from "./utils.js";
 
 const type = window.location.pathname.split("/").pop().replace(".html", "");
@@ -15,7 +16,7 @@ const downloadBtn = document.getElementById("downloadBtn");
 
 
 accumulateTable();  // 先加總總表
-const rows = parseTableToRows(type, table);
+const rows = parseRecordsToRows(type, state.records);
 
 window.onscroll = function() {
     if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {

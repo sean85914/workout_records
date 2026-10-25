@@ -21,6 +21,7 @@ ATTRS_MAPPING = {
     "Mean Cadence": "average_cadence",
     "Distance": "distance",
     "Elevation Gain": "total_elevation_gain",
+    "Type": "type",
 }
 
 WORKOUT_COLUMNS = [
@@ -39,6 +40,9 @@ RUN_COLUMNS = [
     "ID", "Name", "Date", "Indoor", "Elapsed Time", "Moving Time",
     "Calories", "Max HR", "Mean HR", "Mean Speed", "Mean Cadence", "Distance",
     "Elevation Gain"
+]
+OTHERS_COLUMNS = [
+    "ID", "Type", "Name", "Date", "Elapsed Time", "Calories", "Max HR", "Mean HR", "Distance"
 ]
 
 HTML_TEMPLATE = '''<!DOCTYPE html>
@@ -160,9 +164,11 @@ def save_data(data, work_type):
     Args:
         data (list | dict): The records to save, either as a list of rows or a
             dict containing a ``'datas'`` list.
-        work_type (str): Workout type, used as the output file name.
+        work_type (str | list): Workout type, used as the output file name if a string,
+            others otherwise.
     '''
-    with open(f'{work_type}.pkl', 'wb') as f:
+    fname = 'others.pkl' if isinstance(work_type, list) else f'{work_type}.pkl'
+    with open(fname, 'wb') as f:
         pickle.dump({
             'meta': {
                 'date': datetime.now(),
@@ -254,19 +260,30 @@ def collect_activities(client, datas, before=None, after=None):
     Returns:
         list: The same ``datas`` list, with any new activities appended.
     '''
-    work_types = [data['meta']['type'] for data in datas]
-    work_types = [
-        ''.join(part.capitalize() for part in wt.split('_'))
-        for wt in work_types
-    ]
+
+    def _to_camel(s):
+        return ''.join(part.capitalize() for part in s.split('_'))
+
+    type_to_index = {}
+    for i, data in enumerate(datas):
+        meta = data['meta']
+        type_value = meta['type']
+        if isinstance(type_value, list):
+            accepted = [_to_camel(t) for t in type_value]
+        else:
+            accepted = [_to_camel(type_value)]
+        for t in accepted:
+            type_to_index[t] = i
+    if 'Ride' in type_to_index:
+        type_to_index['VirtualRide'] = type_to_index['Ride']
 
     activities = client.get_activities(before=before, after=after)
     sets = [set([d[0] for d in data['datas']]) for data in datas]
     for act in activities:
-        if act.type not in work_types and act.type != 'VirtualRide':
+        if act.type not in type_to_index:
             print(f'Ignore {act.name} ({act.start_date_local}) ({act.type})')
             continue
-        index = work_types.index(act.type if act.type != 'VirtualRide' else 'Ride')
+        index = type_to_index[act.type]
         if act.id in sets[index]:
             print(f'{act.name} already existed, ignore')
             continue
@@ -292,14 +309,22 @@ def collect_activities(client, datas, before=None, after=None):
         elif act.type == 'Run':
             data = [getattr(act_detail, ATTRS_MAPPING[k]) for k in RUN_COLUMNS]
         else:
-            assert False, act.type
+            data = [getattr(act_detail, ATTRS_MAPPING[k]) for k in OTHERS_COLUMNS]
         datas[index]['datas'].append(data)
         sets[index].add(data[0])
         print(f'Add {act.name} ({act.start_date_local})')
     return datas
 
 
-def form_df(data, add_summarize_line=False):
+def get_work_type(type):
+    if isinstance(type, list):
+        work_type = "Others"
+    else:
+        work_type = type.replace('_', ' ').title().replace(' ', '')
+    return work_type
+
+
+def form_df(data, name_as_anchor=False, add_summarize_line=False):
     '''Build a display-ready pandas DataFrame from raw workout records.
 
     Selects the column set for the workout type, sorts by date and derives
@@ -310,6 +335,8 @@ def form_df(data, add_summarize_line=False):
     Args:
         data (dict): A dataset dict with ``'meta'`` (holding the workout
             ``'type'``) and a ``'datas'`` list of rows.
+        name_as_anchor (bool, optional): If True, set Name as anchor which link to
+            strava activity. Defaults to False.
         add_summarize_line (bool, optional): If True, append a final summary row
             totalling distance, elevation, moving time and calories. Defaults to
             False.
@@ -320,7 +347,7 @@ def form_df(data, add_summarize_line=False):
     Raises:
         AssertionError: If the workout type is not supported.
     '''
-    work_type = data['meta']['type'].replace('_', ' ').title().replace(' ', '')
+    work_type = get_work_type(data['meta']['type'])
     if work_type == 'WeightTraining':
         col = WORKOUT_COLUMNS
     elif work_type == 'Swim':
@@ -329,15 +356,18 @@ def form_df(data, add_summarize_line=False):
         col = RIDE_COLUMNS
     elif work_type == 'Run':
         col = RUN_COLUMNS
+    elif work_type == "Others":
+        col = OTHERS_COLUMNS
     else:
         assert False, f"Unsupported type: {work_type}"
     df = pd.DataFrame(data['datas'], columns=col)
     df.sort_values(by="Date", inplace=True)
     df['Elapsed Time'] = df['Elapsed Time'].astype(str).str.replace('0 days ', '')
-    df['Name'] = df.apply(
-        lambda row: f'<a href="https://www.strava.com/activities/{row["ID"]}" target="_blank">{row["Name"]}</a>',
-        axis=1
-    )
+    if name_as_anchor:
+        df['Name'] = df.apply(
+            lambda row: f'<a href="https://www.strava.com/activities/{row["ID"]}" target="_blank">{row["Name"]}</a>',
+            axis=1
+        )
     if 'Moving Time' in col:
         df['Moving Time'] = df['Moving Time'].astype(str).str.replace('0 days ', '')
         moving_time = df['Moving Time'].apply(lambda f: pd.Timedelta(f).total_seconds())
@@ -360,7 +390,8 @@ def form_df(data, add_summarize_line=False):
         df.columns = columns
     if work_type != 'WeightTraining':
         key = 'Indoor' if work_type in ['Run', 'Ride'] else 'Pool'
-        df[key] = df[key].apply(lambda f: 'O' if f else 'X')
+        if key in df:
+            df[key] = df[key].apply(lambda f: 'O' if f else 'X')
     if work_type == 'Swim':
         df['Distance'] = df['Distance'].astype(str) \
             .str.replace(r'[^0-9.]', '', regex=True).astype(float)
@@ -387,6 +418,18 @@ def form_df(data, add_summarize_line=False):
     return df
 
 
+def to_json(data):
+    df = form_df(data)
+    fname = "others.json" if isinstance(data["meta"]["type"], list) else f'{data["meta"]["type"]}.json'
+    df.to_json(
+        fname,
+        default_handler=str,
+        index=False,
+        orient="records",
+        date_format="iso"
+    )
+
+
 def to_html(data):
     '''Render workout records to a standalone ``{WorkType}.html`` file.
 
@@ -405,7 +448,7 @@ def to_html(data):
         AssertionError: If the workout type is not supported.
     '''
     df = form_df(data)
-    work_type = data['meta']['type'].replace('_', ' ').title().replace(' ', '')
+    work_type = get_work_type(data['meta']['type'])
     if work_type == 'WeightTraining':
         work_type_zh = '重量訓練'
     elif work_type == 'Swim':
@@ -414,6 +457,8 @@ def to_html(data):
         work_type_zh = '騎行'
     elif work_type == 'Run':
         work_type_zh = '跑步'
+    elif work_type == 'Others':
+        work_type_zh = '其他'
     else:
         assert False, f"Unsupported type: {work_type}"
     table_str = df.to_html(index=False, escape=False, na_rep='', table_id='myTable')
