@@ -2,8 +2,38 @@ import { accumulateTable } from "./utils.js";
 import noUiSlider from "nouislider";
 
 
+const panel = document.getElementById("filter-panel");
+const headers = [...document.querySelectorAll("#myTable thead th")]
+    .map(th => th.innerText);
+const typeIndex = headers.indexOf("Type");
+const shouldDisplay = new Set();
+if (typeIndex !== -1) {
+    const div = document.createElement("div");
+    div.className = "filter-row filter-type";
+    const typeSet = new Set([...document.querySelectorAll("#myTable tbody tr")]
+        .map(tr => tr.querySelector(`td:nth-child(${typeIndex + 1})`)?.innerText));
+    typeSet.forEach(type => {
+        const label = document.createElement("label");
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.value = type;
+        cb.checked = true;
+        shouldDisplay.add(type);
+        cb.addEventListener("change", (e) => {
+            if (e.target.checked) {
+                shouldDisplay.add(e.target.value);
+            } else {
+                shouldDisplay.delete(e.target.value);
+            }
+            filterTable();
+        });
+        label.append(cb, ` ${type}`);
+        div.appendChild(label);
+    });
+    document.getElementById("reset").before(div);
+}
+
 document.getElementById("toggleFilter").addEventListener("click", () => {
-    const panel = document.getElementById("filter-panel");
     const btn = document.getElementById("toggleFilter");
     const isOpen = panel.style.display !== "none";
     panel.style.display = isOpen ? "none" : "block";
@@ -91,6 +121,7 @@ export function resetFilter() {
     if (elevSlider?.noUiSlider) {
         elevSlider.noUiSlider.reset();
     }
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
     document.querySelector('.location-btn[data-value="全部"]')?.click();
     document.getElementById('keyword').value = '';
     filterTable();
@@ -178,6 +209,13 @@ export function filterTable() {
                     !tr[i].getElementsByTagName("td")[nameColumnIndex].innerText.toLowerCase().includes(keyword)) {
                 showRow = false;
             }
+            // 類別
+            if (typeIndex !== -1) {
+                const type = tr[i].getElementsByTagName("td")[typeIndex].innerText;
+                if (!shouldDisplay.has(type)) {
+                    showRow = false;
+                }
+            }
             // 執行隱藏或顯示
             tr[i].style.display = showRow ? "" : "none";
         }
@@ -210,6 +248,9 @@ function syncToURL() {
         if (min > 0) params.set('elevMin', min);
         if (max < elevSlider.noUiSlider.options.range.max) params.set('elevMax', max);
     }
+    if (typeIndex !== -1){
+        shouldDisplay.forEach(type => params.append("type", type));
+    }
 
     const newURL = `${window.location.pathname}?${params.toString()}`;
     window.history.replaceState(null, '', newURL);
@@ -217,7 +258,7 @@ function syncToURL() {
 
 function restoreFromURL() {
     const params = new URLSearchParams(window.location.search);
-    const keys = ['start', 'end', 'q', 'loc', 'distMin', 'distMax', 'elevMin', 'elevMax'];
+    const keys = ['start', 'end', 'q', 'loc', 'distMin', 'distMax', 'elevMin', 'elevMax', 'type'];
     const hasFilter = keys.some(key => params.has(key));
     if (hasFilter) {
         // 展開過濾畫面
@@ -252,6 +293,15 @@ function restoreFromURL() {
             params.has('elevMin') ? Number(params.get('elevMin')) : curMin,
             params.has('elevMax') ? Number(params.get('elevMax')) : curMax,
         ]);
+    }
+
+    if (typeIndex !== -1 && params.get('type')) {
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+        shouldDisplay.clear();
+        params.getAll('type').forEach(type => {
+            document.querySelector(`input[type="checkbox"][value=${type}]`).checked = true;
+            shouldDisplay.add(type);
+        });
     }
 
     if (hasFilter) filterTable();
