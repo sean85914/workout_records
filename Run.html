@@ -20,27 +20,27 @@
         <button id="toggleFilter">▼ 篩選</button>
         <div id="filter-panel" style="display: none;">
             <div class="filter-row">
-                <label>起始日期：</label>
+                <label for="startDate">起始日期：</label>
                 <input type="date" id="startDate">
-                <label>結束日期：</label>
+                <label for="endDate">結束日期：</label>
                 <input type="date" id="endDate">
             </div>
             <div class="filter-row">
-                <label>關鍵字：</label>
+                <label for="keyword">關鍵字：</label>
                 <input type="text" id="keyword" placeholder="活動名稱">
             </div>
             <div class="filter-row">
-                <label>距離：</label>
+                <label for="dist-slider">距離：</label>
                 <span id="dist-range-label">0 ~ 100km</span>
                 <div id="dist-slider"></div>
             </div>
             <div class="filter-row">
-                <label>爬升：</label>
+                <label for="elev-slider">爬升：</label>
                 <span id="elev-range-label">0 ~ 100m</span>
                 <div id="elev-slider"></div>
             </div>
             <div class="filter-row">
-                <label>地點：</label>
+                <label for="location-toggle">地點：</label>
                 <div id="location-toggle">
                     <button class="location-btn  active" data-value="全部">全部</button>
                     <button class="location-btn " data-value="跑步機">跑步機</button>
