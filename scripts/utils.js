@@ -11,18 +11,22 @@ const should_accumulate = [
 ];
 
 const TIME_PATTERN = /([0-9]{2}):([0-9]{2}):([0-9]{2})/;
+export const CONFIG = {
+    Swim:           { label: "游泳", emoji: "🏊", color: "#3498db" },
+    Ride:           { label: "單車", emoji: "🚴", color: "#2ecc71" },
+    Run:            { label: "跑步", emoji: "🏃", color: "#e74c3c" },
+    WeightTraining: { label: "重訓", emoji: "🏋", color: "#f39c12" },
+    Others:         { label: "其他", emoji: "🤸", color: "#e6e212" },
+};
 // 顏色映射
 export const colorScale = d3.scaleOrdinal()
-    .domain(["WeightTraining", "Run", "Swim", "Ride"])
-    .range(["#f39c12", "#e74c3c", "#3498db", "#2ecc71"]);
+    .domain(Object.keys(CONFIG))
+    .range(Object.values(CONFIG).map(c => c.color));
 
 // 項目中文名稱
-const typeMeta = {
-    Swim:           { label: "游泳"},
-    Ride:           { label: "單車"},
-    Run:            { label: "跑步"},
-    WeightTraining: { label: "重訓"},
-};
+const typeMeta = Object.fromEntries(
+    Object.entries(CONFIG).map(([type, { label }]) => [type, { label }])
+);
 
 
 export class Time {
@@ -148,7 +152,7 @@ export function onOpenDialog() {
 }
 
 export function onCloseDialog() {
-    document.getElementById("reportDialog").close("confirm");
+    document.getElementById("reportDialog").close("cancel");
 }
 
 export function onDialogClose(rows) {
@@ -205,7 +209,7 @@ export function parseDashboardData(type, records, days = 7) {
         count: recent.length,
         totalTime: Time.fromSeconds(totalSeconds),
         totalDist: distKey !== "" ? totalDist : null,
-        distUnit: type === "Swim" ? "m" : type === "WeightTraining" ? null : "km",
+        distUnit: type === "Swim" ? "m" : ["WeightTraining", "Others"].includes(type) ? null : "km",
     };
 }
 
@@ -363,7 +367,7 @@ export function generateChart(year, monthIndex, rows) {
         .text(`${year}/${monthIndex + 1}`);
 
     // 7. 各項目統計摘要（次數 / 總時間 / 總距離）
-    const order = ["Swim", "Ride", "Run", "WeightTraining"];
+    const order = Object.keys(typeMeta);
     const summary = order.map(t => {
         const items = filterRows.filter(r => r.type === t);
         if (!items.length) return null;
@@ -425,15 +429,21 @@ export function generateChart(year, monthIndex, rows) {
             .text(Time.fromSeconds(Math.round(s.totalSec)).toString());
         let rowRight = pad + col.time + timeText.node().getComputedTextLength();
 
-        // 總距離（重訓無距離）
+        // 總距離（重訓無距離，其他若距離為0不顯示）
         if (s.distUnit) {
+            let text;
+            if (s.type === "Others" && s.totalDist === 0)
+                text = "";
+            else {
+                text = s.distUnit === "m"
+                    ? `${Math.round(s.totalDist)} m`
+                    : `${s.totalDist.toFixed(1)} km`;
+            }
             const distText = legendG.append("text")
                 .attr("x", pad + col.dist).attr("y", baseY)
                 .style("font-size", "13px").style("font-variant-numeric", "tabular-nums")
                 .attr("fill", "#333")
-                .text(s.distUnit === "m"
-                    ? `${Math.round(s.totalDist)} m`
-                    : `${s.totalDist.toFixed(1)} km`);
+                .text(text);
             rowRight = pad + col.dist + distText.node().getComputedTextLength();
         }
         maxRight = Math.max(maxRight, rowRight);

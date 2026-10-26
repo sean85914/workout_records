@@ -1,23 +1,19 @@
 import { parseRecordsToRows, onOpenDialog, onCloseDialog, onDialogClose,
          onDownloadReport, parseDashboardData, renderTrendChart,
-         aggregateByPeriod, parseBestRecords } from "./utils.js";
+         aggregateByPeriod, parseBestRecords, CONFIG } from "./utils.js";
 
 
-const config = {
-    Swim:           { label: "游泳", emoji: "🏊", color: "#3498db" },
-    Ride:           { label: "單車", emoji: "🚴", color: "#2ecc71" },
-    Run:            { label: "跑步", emoji: "🏃", color: "#e74c3c" },
-    WeightTraining: { label: "重訓", emoji: "🏋", color: "#f39c12" },
-};
 const toPascal = s => s.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('');
 
 function renderDashboard(allStats) {
     const dashboard = document.getElementById("dashboard");
     for (const [type, data] of Object.entries(allStats)) {
-        const { label, emoji, color } = config[type];
+        if (type === "Others" && data.count === 0)
+            continue;  // 若類型為其他且數量為0，則不顯示
+        const { label, emoji, color } = CONFIG[type];
         const t = data.totalTime;
         const timeStr = t.h > 0 ? `${t.h}h ${t.m}m` : `${t.m}m`;
-        const distStr = data.totalDist !== null
+        const distStr = data.distUnit !== null
             ? (type === "Swim" ? `${Math.round(data.totalDist)}m` : `${data.totalDist.toFixed(1)}km`)
             : "—";
         dashboard.insertAdjacentHTML("beforeend", `
@@ -58,7 +54,7 @@ function renderBestRecords(allBest) {
 function updateChart() {
     const records = cachedRecords[trend.type];
     const data = aggregateByPeriod(trend.type, records, trend.period);
-    const color = config[trend.type].color;
+    const color = CONFIG[trend.type].color;
     document.getElementById("trend-chart").style.setProperty("--chart-color", color);
     renderTrendChart(data);
 }
@@ -73,7 +69,7 @@ const rows = [];
 const cachedRecords = {};
 const dashboardStats = {};
 const allBest = {};
-const types = ["swim", "ride", "run", "weight_training"];
+const types = ["swim", "ride", "run", "weight_training", "others"];
 for (const type of types) {
     const capitalizedType = toPascal(type);
     const res = await fetch(`./python/data/${type}.json`);
